@@ -24,8 +24,8 @@ typedef pair<ll, ll> pl;
 #define GS(s) string s; cin >> s;
 #define F(i, l, r) for(ll i = l; i < r; i++)
 #define FD(i, r, l) for(ll i = r; i > l; i--)
-#define P(a, n) { cout << "{ "; F(_, 0, n) cout << a[_] << " "; cout << "}" << endl; }
-#define EX(x) { cout << x << endl; exit(0); }
+#define P(a, n) { cout << "{ "; F(_, 0, n) cout << a[_] << " "; cout << "}\n"; }
+#define EX(x) { cout << x << '\n'; exit(0); }
 #define A(x) (x).begin(), (x).end()
 #define K first
 #define V second

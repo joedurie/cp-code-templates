@@ -22,20 +22,20 @@ bool lV(int r, int c) { return true; } //IMPLEMENT
 
 void add(int r, int c, int x) { //need changes if 0 or negatives allowed in grid
     gr[r][c] = x > 0 ? x : dfV;
-	F(i, S) {
+    F(i, S) {
         sm[i][ST(r, c, i)] -= x;
         em[i][ST(r, c, i)] -= x / abs(x);
-	}
+    }
     F(i, M) mk[i][MT(r, c, i)] ^= 1 << abs(x);
 }
 
 int getX(int r, int c, bool mn) { //distinct element optimization?
-	int ans = mn ? mnV : mxV;
-	F(i, S) {
-		int t1 = sm[i][ST(r, c, i)], t2 = em[i][ST(r, c, i)] - 1;
-	    ans = mn ? max(ans, t1 - t2 * mxV) : min(ans, t1 - t2 * mnV);
-	}
-	return ans;
+    int ans = mn ? mnV : mxV;
+    F(i, S) {
+        int t1 = sm[i][ST(r, c, i)], t2 = em[i][ST(r, c, i)] - 1;
+        ans = mn ? max(ans, t1 - t2 * mxV) : min(ans, t1 - t2 * mnV);
+    }
+    return ans;
 }
 
 bool bT(int r, int c) {

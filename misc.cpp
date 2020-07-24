@@ -25,22 +25,22 @@ typedef complex<ld> pt;
 #define GS(s) string s; cin >> s;
 #define F(i, l, r) for(ll i = l; i < r; i++)
 #define FD(i, r, l) for(ll i = r; i > l; i--)
-#define P(a, n) { cout << "{ "; F(_, 0, n) cout << a[_] << " "; cout << "}" << endl; }
-#define CE(a, x) lower_bound(a.begin(), a.end(), x)
-#define UP(a, x) upper_bound(a.begin(), a.end(), x)
-#define FL(a, x) (x < *a.begin() ? a.end() : --UP(a, x))
-#define LO(a, x) (x <= *a.begin() ? a.end() : --CE(a, x))
-#define MC(a, x) a.lower_bound(x)
-#define MU(a, x) a.upper_bound(x)
-#define MF(a, x) (x < (*a.begin()).K ? a.end() : --MU(a, x))
-#define ML(a, x) (x <= (*a.begin()).K ? a.end() : --MC(a, x))
-#define EX(x) { cout << x << endl; exit(0); }
+#define P(a, n) { cout << "{ "; F(_, 0, n) cout << a[_] << " "; cout << "}\n" }
+#define CE(a, x) a.lower_bound(x)
+#define UP(a, x) a.upper_bound(x)
+#define FL(a, x) (x < (*a.begin()).K ? a.end() : --UP(a, x))
+#define LO(a, x) (x <= (*a.begin()).K ? a.end() : --CE(a, x))
+#define EX(x) { cout << x << '\n'; exit(0); }
+#define A(x) (x).begin(), (x).end()
 #define K first
 #define V second
-#define X real()
-#define Y imag()
 #define M 1000000007 //998244353
 #define N 100010
+
+//file input / output
+
+freopen("in.txt", "r", stdin);
+freopen("out.txt", "w", stdout);
 
 //DSU
 
@@ -59,7 +59,7 @@ ll dfs(ll i, ll p, ll t) {
     return tOut[i];
 }
 
-//modular combinatorics (prime modulus)
+//modular combinatorics
 
 #define INV(a) pw(a, M - 2) //inv a mod M (only works for prime M)
 #define NCR(n, r) (f[n] * fi[r] % M * fi[n - r] % M)
@@ -87,3 +87,25 @@ using namespace __gnu_pbds;
 
 typedef tree<ll, null_type, less<ll>,
 rb_tree_tag, tree_order_statistics_node_update> set_t;
+
+//prime sieve + phi calculation
+
+ll prime[N];
+
+ll phi(ll n) {
+    ll ans = n;
+    while(n > 1) {
+        ll p = prime[n];
+        while(!(n % p)) n /= p, ans *= p;
+        ans = ans / p * (p-1);
+    }
+    return ans;
+}
+
+int main() {
+    prime[0] = prime[1] = 1;
+    F(i, 2, N) if(!prime[i]) {
+        prime[i] = i;
+        for (ll j = i * i; j < NN; j += i) if(!prime[j]) prime[j] = i;
+    }
+}
