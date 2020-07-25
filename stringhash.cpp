@@ -20,24 +20,21 @@ uniform_int_distribution<ll> dist(256, M1 - 1);
 
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < r; i++)
-#define H(l, r) ((h[r] - h[l]) * ip[l]) //substring [l, r)
-#define EQ(i, j, l) (H(i, i + l) == H(j, j + l)) //true iff [i, i + l) == [j, j + l)
-#define PERIODIC(l, r, k) (l + k > r || EQ(l, l + k, r - l - k)) //true iff [l, r) is periodic with period k
-#define N 100010
+#define EQ(i, j, l) ((h[i + l] - h[i]) * p[j] == (h[j + l] - h[j]) * p[i]) //does s[i, i + l) == s[j, j + l)
+#define PERIODIC(l, r, k) (l + k > r || EQ(l, l + k, r - l - k)) //is s[l, r) periodic with period k
+#define N 500010
 
 string s;
-pl ip[N], h[N];
+pl p[N], h[N];
 ll n, suff[N];
 
-ll inv(ll a, ll b) { return 1 < a ? b - inv(b % a, a) * b / a : 1; }
-
-ll lcp(ll i, ll j, ll l, ll r) { //for l = 0, returns length of longest common prefix of [i, i + r) and [j, j + r)
+ll lcp(ll i, ll j, ll l, ll r) { //for l = 0, returns length of lcp of s[i, i + r) and s[j, j + r)
     if(l == r) return l;
     ll m = (l + r + 1) / 2;
     return EQ(i, j, m) ? lcp(i, j, m, r) : lcp(i, j, l, m - 1);
 }
 
-bool lex_less(ll i, ll lI, ll j, ll lJ) { //true iff [i, i + lI) lexicog. less than [j, j + lJ)
+bool lex_less(ll i, ll lI, ll j, ll lJ) { //is s[i, i + lI) lexicog. less than s[j, j + lJ)
     if(EQ(i, j, min(lI, lJ))) return lI < lJ;
     ll m = lcp(i, j, 0, min(lI, lJ) - 1);
     return s[i + m] < s[j + m];
@@ -46,12 +43,10 @@ bool lex_less(ll i, ll lI, ll j, ll lJ) { //true iff [i, i + lI) lexicog. less t
 int main() {
     ios_base::sync_with_stdio(0);
     cin.tie(0);
-    cin >> n >> s;
+    cin >> s; n = s.size();
     pl base = { dist(gen), dist(gen) };
-    pl temp = { inv(base.K, M1), inv(base.V, M2) };
-    ip[0] = { 1, 1 };
-    F(i, 1, s.size() + 1) ip[i] = ip[i - 1] * temp;
-    F(i, 1, s.size() + 1) h[i] = h[i - 1] + (temp = temp * base) * make_pair(s[i - 1], s[i - 1]);
+    p[0] = { 1, 1 };
+    F(i, 1, s.size() + 1) h[i] = h[i - 1] + (p[i] = p[i - 1] * base) * make_pair(s[i - 1], s[i - 1]);
     iota(suff, suff + n, 0);
     sort(suff, suff + n, [](ll i1, ll i2) { return lex_less(i1, n - i1, i2, n - i2); });
 }
