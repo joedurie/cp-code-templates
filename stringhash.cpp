@@ -25,7 +25,7 @@ uniform_int_distribution<ll> dist(256, M1 - 1);
 #define N 500010
 
 string s;
-pl p[N], h[N];
+pl p[N], h[N], base = { dist(gen), dist(gen) };
 ll n, suff[N];
 
 ll lcp(ll i, ll j, ll l, ll r) { //for l = 0, returns length of lcp of s[i, i + r) and s[j, j + r)
@@ -43,8 +43,7 @@ bool lex_less(ll i, ll lI, ll j, ll lJ) { //is s[i, i + lI) lexicog. less than s
 int main() {
     ios_base::sync_with_stdio(0);
     cin.tie(0);
-    cin >> s; n = s.size();
-    pl base = { dist(gen), dist(gen) };
+    cin >> n >> s;
     p[0] = { 1, 1 };
     F(i, 1, s.size() + 1) h[i] = h[i - 1] + (p[i] = p[i - 1] * base) * make_pair(s[i - 1], s[i - 1]);
     iota(suff, suff + n, 0);
