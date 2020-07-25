@@ -8,24 +8,24 @@ using namespace std;
 typedef long long int ll;
 typedef long double ld;
 typedef pair<ll, ll> pl;
+typedef pair<unsigned ll, ll> hsh;
 
-#define M1 1000000123
-#define M2 1000000321
 #define K first
 #define V second
-#define OP(a, b, c) constexpr pl operator a (const pl p, const pl q) { return { (p.K b q.K) % M1, (p.V c q.V) % M2 }; }
-OP(+, +, +) OP(*, *, *) OP(-, + M1 -, + M2 -)
+#define M 1000000321
+#define OP(x, y) constexpr hsh operator x (const hsh a, const hsh b) { return { a.K x b.K, (a.V y b.V) % M }; }
+OP(+, +) OP(*, *) OP(-, + M -)
 mt19937 gen(chrono::steady_clock::now().time_since_epoch().count());
-uniform_int_distribution<ll> dist(256, M1 - 1);
+uniform_int_distribution<ll> dist(256, M - 1);
 
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < r; i++)
 #define EQ(i, j, l) ((h[i + l] - h[i]) * p[j] == (h[j + l] - h[j]) * p[i]) //does s[i, i + l) == s[j, j + l)
 #define PERIODIC(l, r, k) (l + k > r || EQ(l, l + k, r - l - k)) //is s[l, r) periodic with period k
-#define N 500010
+#define N 100010
 
 string s;
-pl p[N], h[N], base = { dist(gen), dist(gen) };
+hsh p[N], h[N], base = { dist(gen) | 1, dist(gen) | 1 };
 ll n, suff[N];
 
 ll lcp(ll i, ll j, ll l, ll r) { //for l = 0, returns length of lcp of s[i, i + r) and s[j, j + r)
