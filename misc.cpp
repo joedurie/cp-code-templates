@@ -28,8 +28,8 @@ typedef complex<ld> pt;
 #define P(a, n) { cout << "{ "; F(_, 0, n) cout << a[_] << " "; cout << "}\n" }
 #define CE(a, x) a.lower_bound(x)
 #define UP(a, x) a.upper_bound(x)
-#define FL(a, x) (x < (*a.begin()).K ? a.end() : --UP(a, x))
-#define LO(a, x) (x <= (*a.begin()).K ? a.end() : --CE(a, x))
+#define FL(a, x) (x < *a.begin() ? a.end() : --UP(a, x))
+#define LO(a, x) (x <= *a.begin() ? a.end() : --CE(a, x))
 #define EX(x) { cout << x << '\n'; exit(0); }
 #define A(x) (x).begin(), (x).end()
 #define K first

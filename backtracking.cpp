@@ -8,7 +8,7 @@ using namespace std;
 #define F(i, k) for(int i = 0; i < k; i++)
 #define D F(i, n) F(j, m) cout << gr[i][j] << " \n"[j == m - 1];
 #define OK(r, c) (r >= 0 && c >= 0 && r < n && c < m)
-#define SQ(r, c) (3 * (r / 3) + c / 3) //UPDATE?
+#define SQ(r, c) ((r) / 3 + 3 * ((c) / 3))
 #define MT(r, c, i) (!i ? r : (i == 1 ? c : SQ(r, c))) //UPDATE?
 #define ST(r, c, i) (!i ? r : (i == 1 ? c : SQ(r, c))) //UPDATE?
 #define N 9 //UPDATE?
