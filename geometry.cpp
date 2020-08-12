@@ -21,87 +21,105 @@ struct circ { pt C; ld R; };
  * abs(p): vector length
  * norm(p): squared vector length
  * arg(p): angle p forms with positive x axis
- * polar(r, theta): vector with length r pointing in direction theta
+ * polar(r, th): vector with length r pointing in direction th
  * conj(p): reflects p over x axis
  */
 
 #define X real()
 #define Y imag()
-//line from two points
-#define L2P(a, b) {a, b - a, 0};
-//segment from two points
-#define S2P(a, b) {a, b - a, 1}
-//square of a number
-#define SQ(x) ((x) * (x))
-//scalar cross product of two pts
-#define CRS(a, b) (conj(a) * (b)).Y
-//dot product of two pts
-#define DOT(a, b) (conj(a) * (b)).X
-//pt p normalized to unit length
-#define U(p) ((p) / abs(p))
-//true if d1 and d2 (direction vectors) are parallel (or identical)
-#define PARALLEL(d1, d2) (abs(CRS(U(d1), U(d2))) < EPS)
-//line through pt p with angle th
-#define ANG_LINE(p, th) {p, polar(1, th), 0}
-//altitude from pt p to line l
-#define ALT(p, l) L2P(p, cl_pt_on_l(l.s(0)))
-//distance from pt p to line l
-#define DIST_TO(p, l) abs((p) - cl_pt_on_l(p, l))
-//true if p is on (or close to) line l
-#define ON_LINE(p, l) (PARALLEL(l.P - p, l.D) && (!l.S || DOT(l.P - p, l.P + l.D - p) <= 0))
-//pt p reflected over line l
-#define REFLECT_PT(p, l) (2 * cl_pt_on_l(p, l.s(1)) - (p))
-//angle bisector (ray) of angle abc
-#define ANGLE_BIS(a, b, c) {b, INF * (U(a - b) + U(c - b)), 1}
-//perpendicular bisector of segment l
-#define PERP_BIS(l) {l.P + l.D / 2., l.D * I, 0}
-//true if pt p is "above" line l (may not be in traditional sense, but consistent for fixed l)
-#define ABOVE_LINE(p, l) (CRS((p) - l.P, l.D) > 0)
-//puts convex poly formed by upper and lower hulls (as given by get_hulls) into hu
-#define JOIN_HULLS(hu, hd) { hu.pop_back(); hd.pop_back(); for(pt p : hd) hu.push_back(p); }
-//incenter of triangle abc
-#define INCENT(a, b, c) *intsct(ANGLE_BIS(a, b, c), ANGLE_BIS(c, a, b))
-//inradius of triangle abc
-#define INRAD(a, b, c) DIST_TO(INCENT(a, b, c), S2P(a, b))
-//circumcenter of triangle abc
-#define CIRCUMCENT(a, b, c) *intsct(PERP_BIS(S2P(a, b)), PERP_BIS(S2P(a, c)))
-//circumradius of triangle abc
-#define CIRCUMRAD(a, b, c) abs((a) - CIRCUMCENT(a, b, c))
-//orthocenter of triangle abc
-#define ORTHOCENT(a, b, c) *intsct(ALT(a, S2P(b, c)), ALT(b, S2P(a, c)))
-//comparator for sorting pts
+#define SQ(x) ((x) * (x))				//square of x
+#define CRS(a, b) (conj(a) * (b)).Y		//scalar cross product
+#define DOT(a, b) (conj(a) * (b)).X		//dot product
+#define U(p) ((p) / abs(p))				//unit vector in direction of p
+#define Z(p) (abs(p) < EPS)				//true if p approx. (0, 0)
+
+//constants (INF and EPS may need to be modified)
+const ld PI = acos(-1), INF = 1e30, EPS = 0.0001;
+const pt I = {0, 1}, INV = {INF, INF};
+
+//less than operator for pts
 constexpr bool operator<(const pt a, const pt b) {
 	return a.X == b.X ? a.Y < b.Y : a.X < b.X;
 }
-//constants (INF and EPS may need to be modified)
-ld PI = acos(-1), INF = 1e30, EPS = 0.00001;
-pt I = {0, 1};
 
-//intersection pt of l1 and l2, returns NULL if they are nonintersecting / parallel / identical
-pt* intsct(line l1, line l2) {
-    if(PARALLEL(l1.D, l2.D)) return NULL;
+//comparator for sorting pts
+struct p_comp {
+	bool operator() (const pt a, const pt b) { return a < b; }
+} p_cmp;
+
+//line from two points
+line l2p(pt p, pt q) { return {p, q - p, 0}; }
+
+//segment from two points
+line s2p(pt p, pt q) { return {p, q - p, 1}; }
+
+//line through p with angle th
+line ang_line(pt p, ld th) { return {p, polar((ld)1, th), 0}; }
+
+//true if d1 and d2 parallel
+bool parallel(pt d1, pt d2) { return Z(d1) || Z(d2) || Z(CRS(U(d1), U(d2))); }
+
+//"above" may not be in usual sense, but consistent for fixed l
+bool above_line(pt p, line l) { return CRS(p - l.P, l.D) > 0; }
+
+//true if p is on line l
+bool on_line(pt p, line l) { return parallel(l.P - p, l.D) && (!l.S || DOT(l.P - p, l.P + l.D - p) <= 0); }
+
+//intersection pt of l1 and l2, returns INV if they are nonintersecting / parallel / identical
+pt intsct(line l1, line l2) {
+	if(parallel(l1.D, l2.D)) return INV;
 	pt p = l1.P + l1.D * CRS(l2.D, l2.P - l1.P) / CRS(l2.D, l1.D);
-	if(!ON_LINE(p, l1) || !ON_LINE(p, l2)) return NULL;
-	return &p;
+	return !on_line(p, l1) || !on_line(p, l2) ? INV : p;
 }
 
 //closest pt on l to p
 pt cl_pt_on_l(pt p, line l) {
-	if(pt* q = intsct(l, {p, l.D * I, 0})) return *q;
+	pt q = intsct(l, {p, l.D * I, 0});
+	if(!Z(q - INV)) return q;
 	return abs(p - l.P) < abs(p - l.P - l.D) ? l.P : l.P + l.D;
 }
 
-//line r(ray) reflected off line l(s) (if no intersection, returns original ray)
+//altitude from p to l
+line alt(pt p, line l) { return l2p(p, cl_pt_on_l(p, l.s(0))); }
+
+//angle bisector of angle abc
+line ang_bis(pt a, pt b, pt c) { return {b, INF * (U(a - b) + U(c - b)), 1}; }
+
+//perpendicular bisector of l (assumes l.S == 1)
+line perp_bis(line l) { return {l.P + l.D / (ld)2, l.D * I, 0}; }
+
+//distance from p to l
+ld dist_to(pt p, line l) { return abs(p - cl_pt_on_l(p, l)); }
+
+//p reflected over l
+pt refl_pt(pt p, line l) { return (ld)2 * cl_pt_on_l(p, l.s(0)) - p; }
+
+//ray r reflected off line l (if no intersection, returns original ray)
 line reflect_line(line r, line l) {
-	pt* p = intsct(r, l);
-	if(!p) return r;
-	return {p, INF * (p - REFLECT_PT(r.P, l)), 1};
+	pt p = intsct(r, l);
+	if(Z(p - INV)) return r;
+	return {p, INF * (p - refl_pt(r.P, l)), 1};
+}
+
+//orthocenter of triangle abc
+pt orthocent(pt a, pt b, pt c) { return intsct(alt(a, s2p(b, c)), alt(b, s2p(a, c))); }
+
+//incircle of triangle abc
+circ incirc(pt a, pt b, pt c) {
+	pt cent = intsct(ang_bis(a, b, c), ang_bis(b, a, c));
+	return {cent, dist_to(cent, s2p(a, b))};
+}
+
+//circumcircle of triangle abc
+circ circumcirc(pt a, pt b, pt c) {
+	pt cent = intsct(perp_bis(s2p(a, b)), perp_bis(s2p(a, c)));
+	return {cent, abs(cent - a)};
 }
 
 //convex hull of pts (O(n) construction)
-pair<vector<pt>, vector<pt>> get_hulls(vector<pt> pts) {
+pair<vector<pt>, vector<pt>> get_hull(vector<pt> pts) {
 	vector<pt> hu, hd;
-	sort(pts.begin(), pts.end());
+	sort(pts.begin(), pts.end(), p_cmp);
 	#define DO_HULL(h) for(auto p : pts) { \
 		while(h.size() >= 2 && CRS(h.back() - h[h.size() - 2], p - h[h.size() - 2]) <= 0) h.pop_back(); \
 		h.push_back(p); }
@@ -111,10 +129,10 @@ pair<vector<pt>, vector<pt>> get_hulls(vector<pt> pts) {
 	return {hu, hd};
 }
 
-//is pt p in the convex hull given by pts
-bool in_poly(set<pt> pts, pt p) {
-	if(p < *pts.begin() || p > *pts.rbegin()) return true;
-	auto q = --pts.upper_bound(p);
+//is pt p on the (upper or lower) convex hull given by pts
+bool on_hull(vector<pt> pts, pt p) {
+	if(p < *pts.begin() || *pts.rbegin() < p) return true;
+	auto q = --upper_bound(pts.begin(), pts.end(), p, p_cmp);
 	return CRS(p - *q, *++q - p) > 0;
 }
 
@@ -139,38 +157,43 @@ pt centroid(vector<pt> poly) {
 	for(ll i = 0; i < poly.size() - 1; i++) {
 		pt p2 = poly[i], p3 = poly[(i + 1) % (poly.size() - 1)];
 		ld tArea = CRS(p1, p2) + CRS(p2, p3) + CRS(p3, p1);
-		cent += tArea * (p1 + p2 + p3) / 3;
+		cent += tArea * (p1 + p2 + p3) / (ld)3;
 		pArea += tArea;
 	}
 	return cent / pArea;
 }
 
-//intersection pts of two circs (0, 1, or 2)
-pair<pt*, pt*> intsctCC(circ c1, circ c2) {
+//vector of intersection pts of two circs (up to 2)
+vector<pt> intsctCC(circ c1, circ c2) {
 	ld d = abs(c1.C - c2.C);
-	if(d > c1.R + c2.R) return NULL;
+	if(d > c1.R + c2.R || d < abs(c1.R - c2.R)) return {INV, INV};
 	ld h = (SQ(d) - SQ(c2.R) + SQ(c1.R)) / (2 * d);
-	pt v = U(I * (c2.P - c1.P)) * sqrt(SQ(d) - SQ(h));
-	pt mid = (c1.C + c2.C) / 2.;
-	pt p1 = mid + v, p2 = mid - v;
-	return abs(p1 - p2) < EPS ? 
-	pair<pt, pt> ps = {mid + v, mid - v};
-	return &ps;
+	pt v = U(I * (c2.C - c1.C)) * sqrt(SQ(d) - SQ(h));
+	pt p = c1.C + U(c2.C - c1.C) * h;
+	vector<pt> ans = {p + v};
+	if(!Z(v)) ans.push_back(p - v);
+	return ans;
 }
 
-//intersection pts of a line and a circ (0, 1, or 2)
-pair<pt*, pt*> intsctCL(circ c, line l) {
-	if(DIST_TO(c.C, l) > c.R) return NULL;
+//vector of intersection pts of a line and a circ (up to 2)
+vector<pt> intsctCL(circ c, line l) {
+	if(dist_to(c.C, l) > c.R) return {};
 	pt p = cl_pt_on_l(c.C, l);
-	pt v = U(l.D) * sqrt(SQ(c.R) - SQ(abs(p - c.C)));
-	pt p1 = p + v, p2 = p - v;
-	pair<pt*, pt*> res = {&p1, &p2};
-	if(!ON_LINE(p1, l)) res.first = NULL;
-	if(!ON_LINE(p2, l) || abs(p1 - p2) < EPS) res.second = NULL;
-	return res;
+	pt v = U(l.D) * sqrt(SQ(c.R) - norm(p - c.C));
+	vector<pt> ans;
+	if(on_line(p + v, l)) ans.push_back(p + v);
+	if(on_line(p - v, l) && !Z(v)) ans.push_back(p - v);
+	return ans;
+}
+
+int main() {
+	ios_base::sync_with_stdio(0);
+    cin.tie(0);
+	
 }
 
 /* TODO:
+fix on_hull
 make all sets/vectors pass by reference
 common tangents of circles
 streaming convex hull
