@@ -6,12 +6,11 @@
 using namespace std;
 
 typedef long long int ll;
-typedef long double ld;
 typedef pair<ll, ll> pl;
 typedef ll T;
 
 #define G(x) ll x; cin >> x;
-#define F(i, l, r) for(ll i = l; i < r; i++)
+#define F(i, l, r) for(ll i = l; i < (r); i++)
 #define UPD(v, k) stree.modify(idx[v], k);
 #define K first
 #define V second

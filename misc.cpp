@@ -23,15 +23,15 @@ typedef complex<ld> pt;
 #define G(x) ll x; cin >> x;
 #define GD(x) ld x; cin >> x;
 #define GS(s) string s; cin >> s;
-#define F(i, l, r) for(ll i = l; i < r; i++)
-#define FD(i, r, l) for(ll i = r; i > l; i--)
-#define P(a, n) { cout << "{ "; F(_, 0, n) cout << a[_] << " "; cout << "}\n" }
-#define CE(a, x) a.lower_bound(x)
-#define UP(a, x) a.upper_bound(x)
-#define FL(a, x) (x < *a.begin() ? a.end() : --UP(a, x))
-#define LO(a, x) (x <= *a.begin() ? a.end() : --CE(a, x))
-#define EX(x) { cout << x << '\n'; exit(0); }
-#define A(x) (x).begin(), (x).end()
+#define F(i, l, r) for(ll i = l; i < (r); i++)
+#define FD(i, r, l) for(ll i = r; i > (l); i--)
+#define P(a, n) { cout << "{ "; F(_, 0, n) cout << a[_] << ' '; cout << "}\n" }
+#define CE(a, x) (a).lower_bound(x)
+#define UP(a, x) (a).upper_bound(x)
+#define FL(a, x) ((x) < *(a).begin() ? (a).end() : --UP(a, x))
+#define LO(a, x) ((x) <= *(a).begin() ? (a).end() : --CE(a, x))
+#define EX(x) { cout << (x) << '\n'; exit(0); }
+#define A(a) (a).begin(), (a).end()
 #define K first
 #define V second
 #define M 1000000007 //998244353

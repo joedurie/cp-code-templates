@@ -22,11 +22,11 @@ typedef pair<ll, ll> pl;
 #define G(x) ll x; cin >> x;
 #define GD(x) ld x; cin >> x;
 #define GS(s) string s; cin >> s;
-#define F(i, l, r) for(ll i = l; i < r; i++)
-#define FD(i, r, l) for(ll i = r; i > l; i--)
+#define F(i, l, r) for(ll i = l; i < (r); i++)
+#define FD(i, r, l) for(ll i = r; i > (l); i--)
 #define P(a, n) { cout << "{ "; F(_, 0, n) cout << a[_] << " "; cout << "}\n"; }
 #define EX(x) { cout << x << '\n'; exit(0); }
-#define A(x) (x).begin(), (x).end()
+#define A(a) (a).begin(), (a).end()
 #define K first
 #define V second
 #define M 1000000007 //998244353

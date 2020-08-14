@@ -5,12 +5,11 @@
 using namespace std;
 
 typedef long long int ll;
-typedef long double ld;
 typedef pair<ll, ll> pl;
 
 #define G(x) ll x; cin >> x;
-#define F(i, l, r) for(ll i = l; i < r; i++)
-#define N 500010
+#define F(i, l, r) for(ll i = l; i < (r); i++)
+#define N 100010
 
 vector<ll> graph[N], rGraph[N], sccList[N], ord;
 set<ll> sccGraph[N];

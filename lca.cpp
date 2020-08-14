@@ -6,12 +6,11 @@
 using namespace std;
 
 typedef long long int ll;
-typedef long double ld;
 typedef pair<ll, ll> pl;
 
 #define G(x) ll x; cin >> x;
-#define F(i, l, r) for(ll i = l; i < r; i++)
-#define FD(i, r, l) for(ll i = r; i > l; i--)
+#define F(i, l, r) for(ll i = l; i < (r); i++)
+#define FD(i, r, l) for(ll i = r; i > (l); i--)
 #define N 100010
 #define L 20
 
