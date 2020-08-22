@@ -1,5 +1,4 @@
 //Geometry
-//Geometry
 #pragma GCC target ("avx2")
 #pragma GCC optimize ("O3")
 #pragma GCC optimize ("unroll-loops")
@@ -29,10 +28,10 @@ struct circ { pt C; ld R; };
 #define X real()
 #define Y imag()
 #define SQ(x) ((x) * (x)) //square of x
-#define CRS(a, b) (conj(a) * (b)).Y	//scalar cross product
-#define DOT(a, b) (conj(a) * (b)).X	//dot product
-#define U(p) ((p) / abs(p))	//unit vector in direction of p (DON'T USE ON ZERO VECTOR)
-#define Z(p) (abs(p) < EPS)	//true if p approx. (0, 0)
+#define CRS(a, b) (conj(a) * (b)).Y //scalar cross product
+#define DOT(a, b) (conj(a) * (b)).X //dot product
+#define U(p) ((p) / abs(p)) //unit vector in direction of p (DON'T USE ON ZERO VECTOR)
+#define Z(p) (abs(p) < EPS) //true if p approx. (0, 0)
 
 //constants (INF and EPS may need to be modified)
 constexpr ld PI = acos(-1), INF = 1e30, EPS = 0.0001;
@@ -76,7 +75,7 @@ pt intsct(line l1, line l2) {
 //closest pt on l to p
 pt cl_pt_on_l(pt p, line l) {
 	pt q = l.P + DOT(l.D, p - l.P) * U(l.D);
-	if(!on_line(q, l)) return q;
+	if(on_line(q, l)) return q;
 	return abs(p - l.P) < abs(p - l.P - l.D) ? l.P : l.P + l.D;
 }
 
@@ -153,29 +152,29 @@ bool in_poly(pt p, vector<pt>& poly) {
 //area of polygon, vertices in order (cw or ccw)
 ld area(vector<pt>& poly) {
 	ld ans = 0;
-    pt lst = poly.back();
-    for(pt p : poly) ans += CRS(lst, p), lst = p;
-    return abs(ans / 2);
+	pt lst = poly.back();
+	for(pt p : poly) ans += CRS(lst, p), lst = p;
+	return abs(ans / 2);
 }
 
 //perimeter of polygon, vertices in order (cw or ccw)
 ld perim(vector<pt>& poly) {
 	ld ans = 0;
-    pt lst = poly.back();
-    for(pt p : poly) ans += abs(lst - p), lst = p;
+	pt lst = poly.back();
+	for(pt p : poly) ans += abs(lst - p), lst = p;
 	return ans;
 }
 
 //centroid of polygon, vertices in order (cw or ccw)
 pt centroid(vector<pt>& poly) {
-    ld area = 0;
-    pt lst = poly.back(), ans = {0, 0};
-    for(pt p : poly) {
-        area += CRS(lst, p);
-        ans += CRS(lst, p) * (lst + p) / (ld)3;
+	ld area = 0;
+	pt lst = poly.back(), ans = {0, 0};
+	for(pt p : poly) {
+		area += CRS(lst, p);
+		ans += CRS(lst, p) * (lst + p) / (ld)3;
 		lst = p;
-    }
-    return ans / area;
+	}
+	return ans / area;
 }
 
 //vector of intersection pts of two circs (up to 2)
@@ -217,6 +216,6 @@ vector<line> circTangents(circ c1, circ c2) {
 
 int main() {
 	ios_base::sync_with_stdio(0);
-    cin.tie(0);
-	
+	cin.tie(0);
+
 }
