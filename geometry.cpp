@@ -32,20 +32,17 @@ struct circ { pt C; ld R; };
 #define DOT(a, b) (conj(a) * (b)).X //dot product
 #define U(p) ((p) / abs(p)) //unit vector in direction of p (DON'T USE ON ZERO VECTOR)
 #define Z(p) (abs(p) < EPS) //true if p approx. (0, 0)
+#define A(x) (x).begin(), (x).end() //shortens sort(), upper_bound(), etc. for vectors
 
 //constants (INF and EPS may need to be modified)
 constexpr ld PI = acos(-1), INF = 1e30, EPS = 0.0001;
 constexpr pt I = {0, 1}, INV = {INF, INF};
 
-//less than operator for pts
+//less than operator for pts + less / greater comparator fn
 constexpr bool operator<(const pt a, const pt b) {
 	return Z(a.X - b.X) ? a.Y < b.Y : a.X < b.X;
 }
-
-//comparator for sorting pts
-struct p_comp {
-	bool operator() (const pt a, const pt b) { return a < b; }
-} p_cmp;
+bool cmp(const pt a, const pt b) { return a < b; };
 
 //line from two points
 line l2p(pt p, pt q) { return {p, q - p, 0}; }
@@ -74,7 +71,7 @@ pt intsct(line l1, line l2) {
 
 //closest pt on l to p
 pt cl_pt_on_l(pt p, line l) {
-	pt q = l.P + DOT(l.D, p - l.P) * U(l.D);
+	pt q = l.P + DOT(U(l.D), p - l.P) * U(l.D);
 	if(on_line(q, l)) return q;
 	return abs(p - l.P) < abs(p - l.P - l.D) ? l.P : l.P + l.D;
 }
@@ -116,24 +113,41 @@ circ circumcirc(pt a, pt b, pt c) {
 	return {cent, abs(cent - a)};
 }
 
-//convex hull of pts (O(n) construction)
+//helper function for get_hull
+void do_hull(vector<pt>& pts, vector<pt>& h) {
+	for(pt p : pts) {
+		while(h.size() > 1 && CRS(h.back() - p, h[h.size() - 2] - p) <= 0)
+			h.pop_back();
+		h.push_back(p);
+	}
+}
+
+//returns upper convex hull / lower convex hull of pts
 pair<vector<pt>, vector<pt>> get_hull(vector<pt>& pts) {
 	vector<pt> hu, hd;
-	sort(pts.begin(), pts.end(), p_cmp);
-	#define DO_HULL(h) for(pt p : pts) { \
-		while(h.size() >= 2 && CRS(h.back() - h[h.size() - 2], p - h[h.size() - 2]) <= 0) h.pop_back(); \
-		h.push_back(p); }
-	DO_HULL(hu)
-	reverse(pts.begin(), pts.end());
-	DO_HULL(hd)
+	sort(A(pts), cmp), do_hull(pts, hu);
+	reverse(A(pts)), do_hull(pts, hd);
 	return {hu, hd};
 }
 
-//is pt p on the (upper or lower) convex hull given by pts
-bool on_hull(vector<pt>& pts, pt p) {
-	if(p < *pts.begin() || *pts.rbegin() < p) return true;
-	auto q = --upper_bound(pts.begin(), pts.end(), p, p_cmp);
-	return CRS(p - *q, *++q - p) > 0;
+//returns convex hull of pts as a vector of pts in ccw order
+vector<pt> full_hull(vector<pt>& pts) {
+	auto h = get_hull(pts);
+	h.first.pop_back(), h.second.pop_back();
+	for(pt p : h.second) h.first.push_back(p);
+	return h.first;
+}
+
+//returns true if p is contained in the convex hull given by hu and hd
+bool in_hulls(pt p, vector<pt>& hu, vector<pt>& hd) {
+	if(p < *hu.begin() || *hu.rbegin() < p) return true;
+	auto ui = upper_bound(A(hu), p, cmp);
+	pt ur = *ui, ul = *(--ui);
+	reverse(A(hd));
+	auto di = upper_bound(A(hd), p, cmp);
+	pt dr = *di, dl = *(--di);
+	reverse(A(hd));
+	return CRS(ur - p, ul - p) > 0 && CRS(dl - p, dr - p) > 0; //change both to >= to include border
 }
 
 //is pt p inside the (not necessarily convex) polygon given by poly
@@ -207,15 +221,9 @@ vector<line> circTangents(circ c1, circ c2) {
 	if(Z(d2) || h2 < 0) return {};
 	vector<line> ans;
 	for(ld sg : {-1, 1}) {
-		pt v = (d * dr + d * I * sqrt(h2) * sg) / d2;
-		ans.push_back(s2p(c1.C + v * c1.R, c2.C + v * c2.R));
+		pt u = (d * dr + d * I * sqrt(h2) * sg) / d2;
+		ans.push_back(s2p(c1.C + u * c1.R, c2.C + u * c2.R));
 	}
 	if(Z(h2)) ans.pop_back();
 	return ans;
-}
-
-int main() {
-	ios_base::sync_with_stdio(0);
-	cin.tie(0);
-
 }
