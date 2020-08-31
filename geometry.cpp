@@ -8,10 +8,7 @@ using namespace std;
 typedef long long int ll;
 typedef long double ld;
 typedef complex<ld> pt;
-struct line {
-	pt P, D; bool S;
-	line s(bool b) { return {P, D, b}; }
-};
+struct line { pt P, D; bool S; };
 struct circ { pt C; ld R; };
 
 /**
@@ -38,11 +35,14 @@ struct circ { pt C; ld R; };
 constexpr ld PI = acos(-1), INF = 1e30, EPS = 0.0001;
 constexpr pt I = {0, 1}, INV = {INF, INF};
 
-//less than operator for pts + less / greater comparator fn
+//less than operator for pts + comparator fn
 constexpr bool operator<(const pt a, const pt b) {
 	return Z(a.X - b.X) ? a.Y < b.Y : a.X < b.X;
 }
 bool cmp(const pt a, const pt b) { return a < b; };
+
+//makes line l a full line (sets segment bool to false)
+line ml(line l) { return {l.P, l.D, 0}; }
 
 //line from two points
 line l2p(pt p, pt q) { return {p, q - p, 0}; }
@@ -77,7 +77,7 @@ pt cl_pt_on_l(pt p, line l) {
 }
 
 //altitude from p to l
-line alt(pt p, line l) { return l2p(p, cl_pt_on_l(p, l.s(0))); }
+line alt(pt p, line l) { return l2p(p, cl_pt_on_l(p, ml(l))); }
 
 //angle bisector of angle abc
 line ang_bis(pt a, pt b, pt c) { return {b, INF * (U(a - b) + U(c - b)), 1}; }
@@ -89,7 +89,7 @@ line perp_bis(line l) { return {l.P + l.D / (ld)2, l.D * I, 0}; }
 ld dist_to(pt p, line l) { return abs(p - cl_pt_on_l(p, l)); }
 
 //p reflected over l
-pt refl_pt(pt p, line l) { return (ld)2 * cl_pt_on_l(p, l.s(0)) - p; }
+pt refl_pt(pt p, line l) { return (ld)2 * cl_pt_on_l(p, ml(l)) - p; }
 
 //ray r reflected off line l (if no intersection, returns original ray)
 line reflect_line(line r, line l) {
@@ -206,7 +206,7 @@ vector<pt> intsctCC(circ c1, circ c2) {
 //vector of intersection pts of a line and a circ (up to 2)
 vector<pt> intsctCL(circ c, line l) {
 	if(dist_to(c.C, l) > c.R) return {};
-	pt p = cl_pt_on_l(c.C, l.s(0));
+	pt p = cl_pt_on_l(c.C, ml(l));
 	pt v = U(l.D) * sqrt(SQ(c.R) - norm(p - c.C));
 	vector<pt> ans;
 	if(on_line(p + v, l)) ans.push_back(p + v);

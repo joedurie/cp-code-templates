@@ -1,4 +1,4 @@
-//Useful STL functions
+//Useful STL Functions
 #include <bits/stdc++.h>
 using namespace std;
 int a[10], b[10], n = 10, v = 6, u = 8;
