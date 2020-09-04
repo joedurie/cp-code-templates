@@ -10,7 +10,7 @@ typedef long double ld;
 typedef pair<ll, ll> pl;
 
 #define G(x) ll x; cin >> x;
-#define F(i, l, r) for(ll i = l; i < r; i++)
+#define F(i, l, r) for(ll i = l; i < (r); i++)
 #define A(x) (x).begin(), (x).end()
 #define N 100010
 #define INF 1000000000000000000ll

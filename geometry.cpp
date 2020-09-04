@@ -130,7 +130,7 @@ pair<vector<pt>, vector<pt>> get_hull(vector<pt>& pts) {
 	return {hu, hd};
 }
 
-//returns convex hull of pts as a vector of pts in ccw order
+//returns convex hull of pts as a vector of pts in cw order
 vector<pt> full_hull(vector<pt>& pts) {
 	auto h = get_hull(pts);
 	h.first.pop_back(), h.second.pop_back();

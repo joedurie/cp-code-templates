@@ -13,7 +13,7 @@ typedef pair<ll, ll> pl;
 #define N 100010
 
 vector<ll> tree[N];
-ll sz[N], lvl[N]; //lvl is 1-indexed
+ll sz[N], cPar[N], lvl[N]; //lvl is 1-indexed
 
 ll getSize(ll i, ll p) {
     sz[i] = 1;
@@ -30,11 +30,12 @@ ll centroid(ll i, ll p, ll n) {
     return i;
 }
 
-void decomp(ll i, ll l) {
+ll decomp(ll i, ll l) {
     ll cent = centroid(i, -1, getSize(i, -1));
-    lvl[cent] = l; //do whatever processing needs to be done on cent
+    lvl[cent] = l;
     for(ll j : tree[cent]) if(!lvl[j])
-        decomp(j, l + 1);
+        cPar[decomp(j, l + 1)] = cent;
+    return cent;
 }
 
 int main() {

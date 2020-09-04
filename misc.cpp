@@ -14,7 +14,7 @@ typedef pair<ll, ll> pl;
 #define M 1000000007 //998244353
 #define N 100010
 
-//file input / output
+//File Input / Output
 
 freopen("in.txt", "r", stdin);
 freopen("out.txt", "w", stdout);
@@ -30,8 +30,9 @@ rb_tree_tag, tree_order_statistics_node_update> set_t;
 
 int main() {
     set_t s;
-    s.insert(6), s.insert(11), s.insert(15);
-    cout << s.find_by_order(2) << ' ' << s.order_of_key(12) << '\n'; //prints 15 2
+    s.insert(6), s.insert(11); //inserts 6, 11
+    s.find_by_order(1) //returns element at (0-indexed) position 1
+    s.order_of_key(9) //returns number of elements in s that are < 9
 }
 
 //DSU
@@ -39,7 +40,26 @@ int main() {
 ll par[N];
 ll dsu(ll i) { return par[i] == i ? i : par[i] = dsu(par[i]); }
 
-//Time-in-time-out DFS
+//Floyd-Warshall
+
+ll n, d[N][N];
+
+int main() {
+    F(k, 0, n) F(i, 0, n) F(j, 0, n) if(d[i][k] - M && d[k][j] - M) //M = infinity
+        d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+}
+
+//Kadane's Algorithm
+
+ll n, a[N];
+
+int main() {
+    ll mx = 0, cur = 0;
+    F(i, 0, n) cur = max(0ll, cur + a[i]), mx = max(mx, cur);
+    cout << mx << '\n';
+}
+
+//Time-in Time-out DFS
 
 vector<ll> tree[N];
 ll tIn[N], tOut[N];
@@ -51,7 +71,20 @@ ll dfs(ll i, ll p, ll t) {
     return tOut[i];
 }
 
-//modular combinatorics
+//Length of LIS (default is non-decreasing)
+
+vector<ll> lis;
+ll n, a[N];
+
+int main() {
+    F(i, 0, n) {
+        if(lis.empty() || a[i] >= lis.back()) lis.push_back(a[i]); //change to > for strictly increasing
+        else *upper_bound(A(lis), a[i]) = a[i]; //change to lower_bound for strictly increasing
+    }
+    cout << lis.size() << '\n';
+}
+
+//Modular Combinatorics
 
 #define INV(a) pw(a, M - 2) //inv a mod M (only works for prime M)
 #define NCR(n, r) (f[n] * fi[r] % M * fi[(n) - (r)] % M)
@@ -71,7 +104,7 @@ int main() {
     F(i, 1, N) f[i] = i * f[i - 1] % M, fi[i] = INV(f[i]);
 }
 
-//prime sieve + phi calculation
+//Prime Sieve + Phi Calculation
 
 ll prime[N];
 
@@ -91,19 +124,4 @@ int main() {
         prime[i] = i;
         for (ll j = i * i; j < NN; j += i) if(!prime[j]) prime[j] = i;
     }
-}
-
-//Length of LIS (default is non-decreasing)
-
-vector<ll> lis;
-ll a[N];
-
-int main() {
-    G(n)
-    F(i, 0, n) {
-        cin >> a[i];
-        if(lis.empty() || a[i] >= lis.back()) lis.push_back(a[i]); //change to > for strictly increasing
-        else *upper_bound(A(lis), a[i]) = a[i]; //change to lower_bound for strictly increasing
-    }
-    cout << lis.size() << '\n';
 }
