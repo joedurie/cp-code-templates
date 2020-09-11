@@ -13,7 +13,6 @@ typedef pair<ll, ll> pl;
 #define F(i, l, r) for(ll i = l; i < (r); i++)
 #define A(x) (x).begin(), (x).end()
 #define N 100010
-#define INF 1000000000000000000ll
 
 struct seg { ld x; ll m, b; };
 
@@ -28,10 +27,10 @@ void insert(ll m, ll b) { //lines inserted in inc. slope order for maxhull, desc
 		}
 		hull.pop_back();
 	}
-	hull.push_back({-INF, m, b});
+	hull = {{LLONG_MIN, m, b}};
 }
 
 ll query(ll x) {
-	seg s = *--upper_bound(A(hull), (seg){(ld)x, INF, INF}, [](const seg s1, const seg s2) { return s1.x < s2.x; });
+	seg s = *--upper_bound(A(hull), x, [](const ll a, const seg b) { return a < b.x; });
 	return s.b + s.m * x;
 }

@@ -31,8 +31,8 @@ rb_tree_tag, tree_order_statistics_node_update> set_t;
 int main() {
     set_t s;
     s.insert(6), s.insert(11); //inserts 6, 11
-    s.find_by_order(1) //returns element at (0-indexed) position 1
-    s.order_of_key(9) //returns number of elements in s that are < 9
+    s.find_by_order(1); //returns element at (0-indexed) position 1
+    s.order_of_key(9); //returns number of elements in s that are < 9
 }
 
 //DSU
@@ -112,8 +112,8 @@ ll phi(ll n) {
     ll ans = n;
     while(n > 1) {
         ll p = prime[n];
-        while(!(n % p)) n /= p, ans *= p;
-        ans = ans / p * (p-1);
+        while(!(n % p)) n /= p;
+        ans = ans / p * (p - 1);
     }
     return ans;
 }

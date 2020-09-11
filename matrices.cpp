@@ -13,6 +13,7 @@ typedef vector<vector<ld>> mat;
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < (r); i++)
 #define FD(i, r, l) for(ll i = r; i > (l); i--)
+#define A(x) (x).begin(), (x).end()
 #define N 100010
 
 ld elim(mat& a) { //a is n x m augmented matrix (m > n), returns determinant
@@ -39,14 +40,14 @@ mat mult(mat& a, mat& b) {
 
 mat pow(mat& a, ll p) { //only works for square a and p > 0
     if(p == 1) return a;
-    mat t = pow(a, p / 2), t = mult(t, t);
+    mat t = pow(a, p / 2); t = mult(t, t);
     return p & 1 ? mult(t, a) : t;
 }
 
 mat inv(mat& a) { //inverts a, returns empty matrix if non-invertible
     ll n = a.size();
     mat b(n, vector<ld>(2 * n, 0));
-    F(i, 0, n) copy_n(a[i].begin(), n, b[i].begin()), b[i][n + i] = 1;
+    F(i, 0, n) copy(A(a[i]), b[i].begin()), b[i][n + i] = 1;
     if(!elim(b)) return {{}};
     F(i, 0, n) FD(j, n - 1, -1) b[i][j] = b[i].back(), b[i].pop_back();
     return b;

@@ -7,12 +7,11 @@ using namespace std;
 
 typedef long long int ll;
 typedef pair<ll, ll> pl;
-typedef pair<unsigned ll, ll> hsh;
 
 #define K first
 #define V second
 #define M 1000000321
-#define OP(x, y) constexpr hsh operator x (const hsh a, const hsh b) { return { a.K x b.K, (a.V y b.V) % M }; }
+#define OP(x, y) constexpr pl operator x (const pl a, const pl b) { return { a.K x b.K, (a.V y b.V) % M }; }
 OP(+, +) OP(*, *) OP(-, + M -)
 mt19937 gen(chrono::steady_clock::now().time_since_epoch().count());
 uniform_int_distribution<ll> dist(256, M - 1);
@@ -24,7 +23,7 @@ uniform_int_distribution<ll> dist(256, M - 1);
 #define N 100010
 
 string s;
-hsh p[N], h[N];
+pl p[N], h[N];
 ll n, suff[N];
 
 ll lcp(ll i, ll j, ll l, ll r) {
@@ -33,7 +32,7 @@ ll lcp(ll i, ll j, ll l, ll r) {
     return EQ(i, j, m) ? lcp(i, j, m, r) : lcp(i, j, l, m - 1);
 }
 
-bool lex_less(ll i, ll lI, ll j, ll lJ) {
+bool lexLess(ll i, ll lI, ll j, ll lJ) {
     if(EQ(i, j, min(lI, lJ))) return lI < lJ;
     ll m = lcp(i, j, 0, min(lI, lJ) - 1);
     return s[i + m] < s[j + m];
@@ -46,5 +45,5 @@ int main() {
     p[0] = { 1, 1 }, p[1] = { dist(gen) | 1, dist(gen) };
     F(i, 1, s.size() + 1) p[i] = p[i - 1] * p[1], h[i] = h[i - 1] * p[1] + make_pair(s[i - 1], s[i - 1]);
     iota(suff, suff + n, 0);
-    sort(suff, suff + n, [](ll i, ll j) { return lex_less(i, n - i, j, n - j); });
+    sort(suff, suff + n, [](ll i, ll j) { return lexLess(i, n - i, j, n - j); });
 }

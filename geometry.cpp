@@ -27,7 +27,7 @@ struct circ { pt C; ld R; };
 #define SQ(x) ((x) * (x)) //square of x
 #define CRS(a, b) (conj(a) * (b)).Y //scalar cross product
 #define DOT(a, b) (conj(a) * (b)).X //dot product
-#define U(p) ((p) / abs(p)) //unit vector in direction of p (DON'T USE ON ZERO VECTOR)
+#define U(p) ((p) / abs(p)) //unit vector in direction of p (don't use if Z(p) true)
 #define Z(p) (abs(p) < EPS) //true if p approx. (0, 0)
 #define A(x) (x).begin(), (x).end() //shortens sort(), upper_bound(), etc. for vectors
 
@@ -35,11 +35,12 @@ struct circ { pt C; ld R; };
 constexpr ld PI = acos(-1), INF = 1e30, EPS = 0.0001;
 constexpr pt I = {0, 1}, INV = {INF, INF};
 
-//less than operator for pts + comparator fn
-constexpr bool operator<(const pt a, const pt b) {
-	return Z(a.X - b.X) ? a.Y < b.Y : a.X < b.X;
+//less than operator for pts
+namespace std {
+	constexpr bool operator<(const pt a, const pt b) {
+		return Z(a.X - b.X) ? a.Y < b.Y : a.X < b.X;
+	}
 }
-bool cmp(const pt a, const pt b) { return a < b; };
 
 //makes line l a full line (sets segment bool to false)
 line ml(line l) { return {l.P, l.D, 0}; }
@@ -91,7 +92,7 @@ ld dist_to(pt p, line l) { return abs(p - cl_pt_on_l(p, l)); }
 //p reflected over l
 pt refl_pt(pt p, line l) { return (ld)2 * cl_pt_on_l(p, ml(l)) - p; }
 
-//ray r reflected off line l (if no intersection, returns original ray)
+//ray r reflected off l (if no intersection, returns original ray)
 line reflect_line(line r, line l) {
 	pt p = intsct(r, l);
 	if(Z(p - INV)) return r;
@@ -125,7 +126,7 @@ void do_hull(vector<pt>& pts, vector<pt>& h) {
 //returns upper convex hull / lower convex hull of pts
 pair<vector<pt>, vector<pt>> get_hull(vector<pt>& pts) {
 	vector<pt> hu, hd;
-	sort(A(pts), cmp), do_hull(pts, hu);
+	sort(A(pts)), do_hull(pts, hu);
 	reverse(A(pts)), do_hull(pts, hd);
 	return {hu, hd};
 }
@@ -141,10 +142,10 @@ vector<pt> full_hull(vector<pt>& pts) {
 //returns true if p is contained in the convex hull given by hu and hd
 bool in_hulls(pt p, vector<pt>& hu, vector<pt>& hd) {
 	if(p < *hu.begin() || *hu.rbegin() < p) return true;
-	auto ui = upper_bound(A(hu), p, cmp);
+	auto ui = upper_bound(A(hu), p);
 	pt ur = *ui, ul = *(--ui);
 	reverse(A(hd));
-	auto di = upper_bound(A(hd), p, cmp);
+	auto di = upper_bound(A(hd), p);
 	pt dr = *di, dl = *(--di);
 	reverse(A(hd));
 	return CRS(ur - p, ul - p) > 0 && CRS(dl - p, dr - p) > 0; //change both to >= to include border
@@ -191,10 +192,10 @@ pt centroid(vector<pt>& poly) {
 	return ans / area;
 }
 
-//vector of intersection pts of two circs (up to 2)
+//vector of intersection pts of two circs (up to 2) (if circles same, returns empty vector)
 vector<pt> intsctCC(circ c1, circ c2) {
 	ld d = abs(c1.C - c2.C);
-	if(d > c1.R + c2.R || d < abs(c1.R - c2.R) || Z(d)) return {INV, INV};
+	if(d > c1.R + c2.R || d < abs(c1.R - c2.R) || Z(d)) return {};
 	ld h = (SQ(d) - SQ(c2.R) + SQ(c1.R)) / (2 * d);
 	pt v = U(I * (c2.C - c1.C)) * sqrt(SQ(d) - SQ(h));
 	pt p = c1.C + U(c2.C - c1.C) * h;
