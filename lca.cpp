@@ -17,11 +17,11 @@ typedef pair<ll, ll> pl;
 ll dep[N], par[N][L];
 vector<ll> tree[N];
 
-void dfs(ll i, ll p, ll d) {
-    dep[i] = d;
+void dfs(ll i, ll p) {
+    dep[i] = dep[p] + 1;
     par[i][0] = p;
     F(l, 1, L) par[i][l] = par[par[i][l - 1]][l - 1];
-    for(ll j : tree[i]) if(j - p) dfs(j, i, d + 1);
+    for(ll j : tree[i]) if(j - p) dfs(j, i);
 }
 
 ll lca(ll a, ll b) {
@@ -41,5 +41,5 @@ int main() {
         tree[u].push_back(v);
         tree[v].push_back(u);
     }
-    dfs(1, 1, 0);
+    dfs(1, 1);
 }

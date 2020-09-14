@@ -15,13 +15,13 @@ typedef pair<ll, ll> pl;
 vector<ll> graph[N], backIn[N], backOut[N], tree[N];
 ll dep[N], par[N]; //make depth of root 1
 
-ll dfs(ll i, ll p, ll d) {
-    dep[i] = d;
+ll dfs(ll i, ll p) {
     par[i] = p;
+    dep[i] = dep[p] + 1;
     for(ll j : graph[i]) if(j - p) {
         if(!dep[j]) {
             tree[i].push_back(j);
-            dfs(j, i, d + 1);
+            dfs(j, i);
         } else if(dep[j] < dep[i]) {
             backIn[j].push_back(i);
             backOut[i].push_back(j);
@@ -38,5 +38,5 @@ int main() {
         graph[u].push_back(v);
         graph[v].push_back(u);
     }
-    dfs(1, 1, 1);
+    dfs(1, 1);
 }
