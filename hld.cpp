@@ -16,7 +16,7 @@ typedef ll T;
 
 vector<ll> tree[N];
 T val[N];
-ll sz[N], dep[N], idx[N], heavy[N], par[N], top[N];
+ll dep[N], idx[N], heavy[N], top[N];
 
 struct segtree { // simplified for commutative + associative operations
     T id = 0, t[2 * N];
@@ -40,26 +40,26 @@ struct segtree { // simplified for commutative + associative operations
 struct segtree stree;
 
 ll dfs1(ll i, ll p) {
-    sz[i] = 1;
-    par[i] = p;
-    heavy[i] = N - 1;
     dep[i] = dep[p] + 1;
+    heavy[i] = N - 1;
+    ll sz = 1, mx = 0;
     for(ll j : tree[i]) if(j - p) {
-        sz[i] += dfs1(j, i);
-        if(sz[j] > sz[heavy[i]]) heavy[i] = j;
+        ll k = dfs1(j, i);
+        if(k > mx) mx = k, heavy[i] = j;
+        sz += k;
     }
-    return sz[i];
+    return sz;
 }
 
 ll pos = 0;
-void dfs2(ll i, ll t) {
+void dfs2(ll i, ll p, ll t) {
     stree.modify(pos, val[i]);
     idx[i] = pos++;
-    top[i] = t == i ? par[i] : t;
-    if(sz[heavy[i]]) dfs2(heavy[i], t);
+    top[i] = t == i ? p : t;
+    if(heavy[i] + 1 - N) dfs2(heavy[i], i, t);
     for(ll j : tree[i])
-        if(j - par[i] && j - heavy[i])
-            dfs2(j, j);
+        if(j - p && j - heavy[i])
+            dfs2(j, i, j);
 }
 
 ll query(ll a, ll b) { // only works for commutative + associative operations - others very messy
@@ -83,7 +83,7 @@ int main() {
     }
     dfs1(1, 1);
     //if values initially on edges, fill val[] here
-    dfs2(1, 1);
+    dfs2(1, 1, 1);
     G(q) while(q--) {
         // query(a, b) or UPD(v, k) as necessary
     }
