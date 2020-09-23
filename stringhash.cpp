@@ -1,7 +1,7 @@
 //String Hashing
-#pragma GCC target ("avx2")
-#pragma GCC optimize ("O3")
-#pragma GCC optimize ("unroll-loops")
+#pragma GCC target("avx2")
+#pragma GCC optimize("O3")
+#pragma GCC optimize("unroll-loops")
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -11,13 +11,13 @@ typedef pair<ll, ll> pl;
 #define K first
 #define V second
 #define M 1000000321
-#define OP(x, y) constexpr pl operator x (const pl a, const pl b) { return { a.K x b.K, (a.V y b.V) % M }; }
+#define OP(x, y) pl operator x (pl a, pl b) { return { a.K x b.K, (a.V y b.V) % M }; }
 OP(+, +) OP(*, *) OP(-, + M -)
 mt19937 gen(chrono::steady_clock::now().time_since_epoch().count());
 uniform_int_distribution<ll> dist(256, M - 1);
 
 #define G(x) ll x; cin >> x;
-#define F(i, l, r) for(ll i = l; i < (r); i++)
+#define F(i, l, r) for(ll i = l; i < (r); ++i)
 #define H(i, l) (h[(i) + (l)] - h[i] * p[l])
 #define EQ(i, j, l) (H(i, l) == H(j, l))
 #define N 100010

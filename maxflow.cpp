@@ -1,7 +1,7 @@
 //Maxflow
-#pragma GCC target ("avx2")
-#pragma GCC optimize ("O3")
-#pragma GCC optimize ("unroll-loops")
+#pragma GCC target("avx2")
+#pragma GCC optimize("O3")
+#pragma GCC optimize("unroll-loops")
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -9,7 +9,7 @@ typedef long long int ll;
 typedef pair<ll, ll> pl;
 
 #define G(x) ll x; cin >> x;
-#define F(i, l, r) for(ll i = l; i < (r); i++)
+#define F(i, l, r) for(ll i = l; i < (r); ++i)
 #define N 100010
 
 struct max_flow {
@@ -20,7 +20,7 @@ struct max_flow {
     vector<edge> e;
     vector<ll> g[MAXN];
 
-    max_flow(ll n, ll s, ll t) : n(n), s(s), t(t) {}
+    max_flow(ll n0, ll s0, ll t0) : n(n0), s(s0), t(t0) {}
 
     void add_edge(ll a, ll b, ll cap) {
         edge e1 = { a, b, cap, 0 }, e2 = { b, a, 0, 0 };
@@ -46,13 +46,13 @@ struct max_flow {
                 }
             }
         }
-        return d[t] != -1;
+        return ~d[t];
     }
 
     ll dfs(ll v, ll flow) {
         if(!flow) return 0;
         if(v == t) return flow;
-        for(; ptr[v] < (ll)g[v].size(); ptr[v]++) {
+        for(; ptr[v] < (ll)g[v].size(); ++ptr[v]) {
             ll id = g[v][ptr[v]], to = e[id].b;
             if(d[to] != d[v] + 1) continue;
             ll pushed = dfs(to, min(flow, e[id].cap - e[id].flow));

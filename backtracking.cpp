@@ -1,11 +1,11 @@
 //Backtracking
-#pragma GCC target ("avx2")
-#pragma GCC optimize ("O3")
-#pragma GCC optimize ("unroll-loops")
+#pragma GCC target("avx2")
+#pragma GCC optimize("O3")
+#pragma GCC optimize("unroll-loops")
 #include <bits/stdc++.h>
 using namespace std;
 
-#define F(i, k) for(int i = 0; i < (k); i++)
+#define F(i, k) for(int i = 0; i < (k); ++i)
 #define D F(i, n) F(j, m) cout << gr[i][j] << " \n"[j == m - 1];
 #define OK(r, c) (r >= 0 && c >= 0 && r < n && c < m)
 #define SQ(r, c) ((r) / 3 + 3 * ((c) / 3)) //UPDATE?
@@ -44,7 +44,7 @@ bool bT(int r, int c) {
     if(gr[r][c] != dfV) return lV(r, c) && bT(rI, cI);
     int mask = mk[0][r] & mk[1][c] & mk[2][SQ(r, c)]; //UPDATE?
     int mnX = getX(r, c, true), mxX = getX(r, c, false);
-    for(int x = mnX; x <= mxX && mask >> x; x++) if((mask >> x) & 1) {
+    for(int x = mnX; x <= mxX && mask >> x; ++x) if((mask >> x) & 1) {
         add(r, c, x);
         if(lV(r, c) && bT(rI, cI)) return true;
         add(r, c, -x);

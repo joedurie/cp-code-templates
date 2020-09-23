@@ -1,7 +1,7 @@
 //Heavy-Light Decomposition
-#pragma GCC target ("avx2")
-#pragma GCC optimize ("O3")
-#pragma GCC optimize ("unroll-loops")
+#pragma GCC target("avx2")
+#pragma GCC optimize("O3")
+#pragma GCC optimize("unroll-loops")
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -10,7 +10,7 @@ typedef pair<ll, ll> pl;
 typedef ll T;
 
 #define G(x) ll x; cin >> x;
-#define F(i, l, r) for(ll i = l; i < (r); i++)
+#define F(i, l, r) for(ll i = l; i < (r); ++i)
 #define UPD(v, k) stree.modify(idx[v], k);
 #define N 100010
 
@@ -18,7 +18,7 @@ vector<ll> tree[N];
 T val[N];
 ll dep[N], idx[N], heavy[N], top[N];
 
-struct segtree { // simplified for commutative + associative operations
+struct segtree { // simplified for commutative operations
     T id = 0, t[2 * N];
     T f(T a, T b) { return max(a, b); }
 
@@ -41,7 +41,7 @@ struct segtree stree;
 
 ll dfs1(ll i, ll p) {
     dep[i] = dep[p] + 1;
-    heavy[i] = N - 1;
+    heavy[i] = -1;
     ll sz = 1, mx = 0;
     for(ll j : tree[i]) if(j - p) {
         ll k = dfs1(j, i);
@@ -56,13 +56,13 @@ void dfs2(ll i, ll p, ll t) {
     stree.modify(pos, val[i]);
     idx[i] = pos++;
     top[i] = t == i ? p : t;
-    if(heavy[i] + 1 - N) dfs2(heavy[i], i, t);
+    if(~heavy[i]) dfs2(heavy[i], i, t);
     for(ll j : tree[i])
         if(j - p && j - heavy[i])
             dfs2(j, i, j);
 }
 
-ll query(ll a, ll b) { // only works for commutative + associative operations - others very messy
+ll query(ll a, ll b) { // only works for commutative operations - others very messy
     if(idx[a] - idx[b] == dep[a] - dep[b]) {
         if(dep[a] > dep[b]) swap(a, b);
         return stree.query(b, dep[b] - dep[a] + 1); //remove +1 if querying vals at edges (not vertices)

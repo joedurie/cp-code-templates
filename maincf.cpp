@@ -1,7 +1,7 @@
 //Codeforces Template
-#pragma GCC target ("avx2")
-#pragma GCC optimize ("O3")
-#pragma GCC optimize ("unroll-loops")
+#pragma GCC target("avx2")
+#pragma GCC optimize("O3")
+#pragma GCC optimize("unroll-loops")
 #include <bits/stdc++.h>
 using namespace std;
 template<class T, class S>
@@ -23,8 +23,8 @@ typedef pair<ll, ll> pl;
 #define G(x) ll x; cin >> x;
 #define GD(x) ld x; cin >> x;
 #define GS(s) string s; cin >> s;
-#define F(i, l, r) for(ll i = l; i < (r); i++)
-#define FD(i, r, l) for(ll i = r; i > (l); i--)
+#define F(i, l, r) for(ll i = l; i < (r); ++i)
+#define FD(i, r, l) for(ll i = r; i > (l); --i)
 #define P(a, n) { cout << "{ "; F(_, 0, n) cout << a[_] << " "; cout << "}\n"; }
 #define EX(x) { cout << x << '\n'; exit(0); }
 #define A(a) (a).begin(), (a).end()

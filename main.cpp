@@ -1,7 +1,7 @@
 //ICPC Template
-#pragma GCC target ("avx2")
-#pragma GCC optimize ("O3")
-#pragma GCC optimize ("unroll-loops")
+#pragma GCC target("avx2")
+#pragma GCC optimize("O3")
+#pragma GCC optimize("unroll-loops")
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -9,7 +9,7 @@ typedef long long int ll;
 typedef pair<ll, ll> pl;
 
 #define G(x) ll x; cin >> x;
-#define F(i, l, r) for(ll i = l; i < (r); i++)
+#define F(i, l, r) for(ll i = l; i < (r); ++i)
 #define N 100010
 
 int main() {
