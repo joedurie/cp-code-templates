@@ -31,6 +31,6 @@ void insert(ll m, ll b) { //lines inserted in inc. slope order for maxhull, desc
 }
 
 ll query(ll x) {
-	seg s = *--upper_bound(A(hull), x, [](const ll a, const seg b) { return a < b.x; });
+	seg s = *--upper_bound(A(hull), x, [](ll a, seg b) { return a < b.x; });
 	return s.b + s.m * x;
 }

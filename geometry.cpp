@@ -24,22 +24,20 @@ struct circ { pt C; ld R; };
 
 #define X real()
 #define Y imag()
-#define SQ(x) ((x) * (x)) //square of x
 #define CRS(a, b) (conj(a) * (b)).Y //scalar cross product
 #define DOT(a, b) (conj(a) * (b)).X //dot product
-#define U(p) ((p) / abs(p)) //unit vector in direction of p (don't use if Z(p) true)
-#define Z(p) (abs(p) < EPS) //true if p approx. (0, 0)
+#define U(p) ((p) / abs(p)) //unit vector in direction of p (don't use if !p == true)
 #define A(x) (x).begin(), (x).end() //shortens sort(), upper_bound(), etc. for vectors
 
 //constants (INF and EPS may need to be modified)
 constexpr ld PI = acos(-1), INF = 1e30, EPS = 0.0001;
 constexpr pt I = {0, 1}, INV = {INF, INF};
 
-//less than operator for pts
 namespace std {
-	constexpr bool operator<(const pt a, const pt b) {
-		return Z(a.X - b.X) ? a.Y < b.Y : a.X < b.X;
-	}
+	//true if p is approx. (0, 0)
+	bool operator!(pt a) { return abs(a) < EPS; }
+	//lexicographical comparison
+	bool operator<(pt a, pt b) { return !(a.X - b.X) ? a.Y < b.Y : a.X < b.X; }
 }
 
 //makes line l a full line (sets segment bool to false)
@@ -55,7 +53,7 @@ line s2p(pt p, pt q) { return {p, q - p, 1}; }
 line ang_line(pt p, ld th) { return {p, polar((ld)1, th), 0}; }
 
 //true if d1 and d2 parallel (zero vectors considered parallel to everything)
-bool parallel(pt d1, pt d2) { return Z(d1) || Z(d2) || Z(CRS(U(d1), U(d2))); }
+bool parallel(pt d1, pt d2) { return !d1 || !d2 || !CRS(U(d1), U(d2)); }
 
 //"above" here means if l & p are rotated such that l.D points in the +x direction, then p is above l
 bool above_line(pt p, line l) { return CRS(p - l.P, l.D) > 0; }
@@ -95,7 +93,7 @@ pt refl_pt(pt p, line l) { return (ld)2 * cl_pt_on_l(p, ml(l)) - p; }
 //ray r reflected off l (if no intersection, returns original ray)
 line reflect_line(line r, line l) {
 	pt p = intsct(r, l);
-	if(Z(p - INV)) return r;
+	if(!(p - INV)) return r;
 	return {p, INF * (p - refl_pt(r.P, l)), 1};
 }
 
@@ -159,7 +157,7 @@ bool in_poly(pt p, vector<pt>& poly) {
 	for(pt q : poly) {
 		line s = s2p(q, lst); lst = q;
 		if(on_line(p, s)) return true; //change if border not included
-		else if(!Z(intsct(l, s) - INV)) ans = !ans;
+		else if(!!(intsct(l, s) - INV)) ans = !ans;
 	}
 	return ans;
 }
@@ -195,12 +193,12 @@ pt centroid(vector<pt>& poly) {
 //vector of intersection pts of two circs (up to 2) (if circles same, returns empty vector)
 vector<pt> intsctCC(circ c1, circ c2) {
 	ld d = abs(c1.C - c2.C);
-	if(d > c1.R + c2.R || d < abs(c1.R - c2.R) || Z(d)) return {};
-	ld h = (SQ(d) - SQ(c2.R) + SQ(c1.R)) / (2 * d);
-	pt v = U(I * (c2.C - c1.C)) * sqrt(SQ(d) - SQ(h));
+	if(d > c1.R + c2.R || d < abs(c1.R - c2.R) || !d) return {};
+	ld h = (d * d - c2.R * c2.R + c1.R * c1.R) / (2 * d);
+	pt v = U(I * (c2.C - c1.C)) * sqrt(d * d - h * h);
 	pt p = c1.C + U(c2.C - c1.C) * h;
 	vector<pt> ans = {p + v};
-	if(!Z(v)) ans.push_back(p - v);
+	if(!!v) ans.push_back(p - v);
 	return ans;
 }
 
@@ -208,23 +206,23 @@ vector<pt> intsctCC(circ c1, circ c2) {
 vector<pt> intsctCL(circ c, line l) {
 	if(dist_to(c.C, l) > c.R) return {};
 	pt p = cl_pt_on_l(c.C, ml(l));
-	pt v = U(l.D) * sqrt(SQ(c.R) - norm(p - c.C));
+	pt v = U(l.D) * sqrt(c.R * c.R - norm(p - c.C));
 	vector<pt> ans;
 	if(on_line(p + v, l)) ans.push_back(p + v);
-	if(on_line(p - v, l) && !Z(v)) ans.push_back(p - v);
+	if(on_line(p - v, l) && !!v) ans.push_back(p - v);
 	return ans;
 }
 
 //external tangents of two circles (negate c2.R for internal tangents)
 vector<line> circTangents(circ c1, circ c2) {
 	pt d = c2.C - c1.C;
-	ld dr = c1.R - c2.R, d2 = norm(d), h2 = d2 - SQ(dr);
-	if(Z(d2) || h2 < 0) return {};
+	ld dr = c1.R - c2.R, d2 = norm(d), h2 = d2 - dr * dr;
+	if(!d2 || h2 < 0) return {};
 	vector<line> ans;
 	for(ld sg : {-1, 1}) {
 		pt u = (d * dr + d * I * sqrt(h2) * sg) / d2;
 		ans.push_back(s2p(c1.C + u * c1.R, c2.C + u * c2.R));
 	}
-	if(Z(h2)) ans.pop_back();
+	if(!h2) ans.pop_back();
 	return ans;
 }

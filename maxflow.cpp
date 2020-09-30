@@ -11,66 +11,46 @@ typedef pair<ll, ll> pl;
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
 #define N 100010
+#define S 1010
 
-struct max_flow {
-    const static ll MAXN = 2000; // max_num_vertices
-    struct edge { ll a, b, cap, flow; };
-
-    ll n, s, t, d[MAXN] = {}, ptr[MAXN] = {}, q[MAXN] = {};
-    vector<edge> e;
-    vector<ll> g[MAXN];
-
-    max_flow(ll n0, ll s0, ll t0) : n(n0), s(s0), t(t0) {}
+struct dinic {
+    struct edge { ll b, cap, flow, flip; };
+    vector<edge> g[S + 2];
+    ll ans = 0, d[S + 2], ptr[S + 2];
 
     void add_edge(ll a, ll b, ll cap) {
-        edge e1 = { a, b, cap, 0 }, e2 = { b, a, 0, 0 };
-        g[a].push_back(e.size());
-        e.push_back(e1);
-        g[b].push_back(e.size());
-        e.push_back(e2);
+        g[a].push_back({b, cap, 0, g[b].size()});
+        g[b].push_back({a, 0, 0, g[a].size() - 1});
     }
 
-    bool bfs() {
-        ll qh = 0, qt = 0;
-        q[qt++] = s;
-        fill_n(d, n, -1);
-        d[s] = 0;
-        while(qh < qt && d[t] == -1) {
-            ll v = q[qh++];
-            F(i, 0, g[v].size()) {
-                ll id = g[v][i],
-                to = e[id].b;
-                if(d[to] == -1 && e[id].flow < e[id].cap) {
-                    q[qt++] = to;
-                    d[to] = d[v] + 1;
-                }
-            }
-        }
-        return ~d[t];
-    }
-
-    ll dfs(ll v, ll flow) {
-        if(!flow) return 0;
-        if(v == t) return flow;
-        for(; ptr[v] < (ll)g[v].size(); ++ptr[v]) {
-            ll id = g[v][ptr[v]], to = e[id].b;
-            if(d[to] != d[v] + 1) continue;
-            ll pushed = dfs(to, min(flow, e[id].cap - e[id].flow));
-            if(pushed) {
-                e[id].flow += pushed;
-                e[id ^ 1].flow -= pushed;
-                return pushed;
+    ll dfs(ll v, ll flow = LLONG_MAX) {
+        if(v == S + 1 || !flow) { ans += flow; return flow; }
+        while(++ptr[v] < g[v].size()) {
+            edge &e = g[v][ptr[v]];
+            if(d[e.b] != d[v] + 1) continue;
+            if(ll p = dfs(e.b, min(flow, e.cap - e.flow))) {
+                e.flow += p;
+                g[e.b][e.flip].flow -= p;
+                return p;
             }
         }
         return 0;
     }
 
-    ll dinic() {
-        ll flow = 0;
-        while(bfs()) {
-            fill_n(ptr, n, 0);
-            while(ll pushed = dfs(s, 1000000000)) flow += pushed;
+    ll calc() {
+        while(1) {
+            vector<ll> q{S};
+            memset(d, 0, sizeof d);
+            ll i = -(d[S] = 1);
+            while(++i < q.size() && !d[S + 1])
+                for(auto e: g[q[i]])
+                    if(!d[e.b] && e.flow < e.cap) {
+                        q.push_back(e.b);
+                        d[e.b] = d[q[i]]+1;
+                    }
+            if(!d[S + 1]) return ans;
+            memset(ptr, -1, sizeof ptr);
+            while(dfs(S));
         }
-        return flow;
     }
 };

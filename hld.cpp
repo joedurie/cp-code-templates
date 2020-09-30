@@ -11,25 +11,25 @@ typedef ll T;
 
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
-#define UPD(v, k) stree.modify(idx[v], k);
+#define A(x) (x).begin(), (x).end()
 #define N 100010
 
 vector<ll> tree[N];
 T val[N];
-ll dep[N], idx[N], heavy[N], top[N];
+ll dep[N], idx[N], sz[N], top[N];
 
-struct segtree { // simplified for commutative operations
+struct segtree { // modified for HLD operations
     T id = 0, t[2 * N];
     T f(T a, T b) { return max(a, b); }
 
-    void modify(ll p, T value) {  // set value at position p
-        for (t[p += N] = value; p /= 2;) t[p] = f(t[2 * p], t[2 * p + 1]);
+    void modify(ll i, T v) {  // set value v at vertex i
+        for (t[i = idx[i] + N] = v; i /= 2;) t[i] = f(t[2 * i], t[2 * i + 1]);
     }
 
     T query(ll i, ll a) { // fold f on first a ancestors of i
-        ll l = idx[i] - a + 1, r = idx[i] + 1;
+        ll r = idx[i] + 1 + N, l = r - a;
         T res = id;
-        for (l += N, r += N; l < r; l /= 2, r /= 2) {
+        for (; l < r; l /= 2, r /= 2) {
             if (l & 1) res = f(res, t[l++]);
             if (r & 1) res = f(res, t[--r]);
         }
@@ -37,39 +37,33 @@ struct segtree { // simplified for commutative operations
     }
 };
 
-struct segtree stree;
+struct segtree st;
 
 ll dfs1(ll i, ll p) {
     dep[i] = dep[p] + 1;
-    heavy[i] = -1;
-    ll sz = 1, mx = 0;
-    for(ll j : tree[i]) if(j - p) {
-        ll k = dfs1(j, i);
-        if(k > mx) mx = k, heavy[i] = j;
-        sz += k;
-    }
-    return sz;
+    sz[i] = 1;
+    for(ll j : tree[i]) if(j - p)
+        sz[i] += dfs1(j, i);
+    sort(A(tree[i]), [](ll j, ll k) { return sz[j] > sz[k]; });
+    return sz[i];
 }
 
 ll pos = 0;
 void dfs2(ll i, ll p, ll t) {
-    stree.modify(pos, val[i]);
+    top[i] = t;
     idx[i] = pos++;
-    top[i] = t == i ? p : t;
-    if(~heavy[i]) dfs2(heavy[i], i, t);
-    for(ll j : tree[i])
-        if(j - p && j - heavy[i])
-            dfs2(j, i, j);
+    st.modify(i, val[i]);
+    for(ll j : tree[i]) if(j - p)
+        dfs2(j, i, t), t = i;
 }
 
-ll query(ll a, ll b) { // only works for commutative operations - others very messy
-    if(idx[a] - idx[b] == dep[a] - dep[b]) {
+T query(ll a, ll b) { // only works for commutative operations - others very messy
+    if(dep[a] - dep[b] == idx[a] - idx[b]) {
         if(dep[a] > dep[b]) swap(a, b);
-        return stree.query(b, dep[b] - dep[a] + 1); //remove +1 if querying vals at edges (not vertices)
+        return st.query(b, dep[b] - dep[a] + 1); //remove +1 if querying vals at edges (not vertices)
     }
-    if(dep[top[a]] > dep[top[b]] || b == 1) swap(a, b);
-    T v = stree.query(b, dep[b] - dep[top[b]]);
-    return stree.f(v, query(a, top[b]));
+    if(dep[top[a]] > dep[top[b]]) swap(a, b);
+    return st.f(query(a, top[b]), st.query(b, dep[b] - dep[top[b]]));
 }
 
 int main() {
@@ -81,10 +75,10 @@ int main() {
         tree[u].push_back(v);
         tree[v].push_back(u);
     }
-    dfs1(1, 1);
+    dfs1(1, N - 1); //N - 1 is unused root vertex
     //if values initially on edges, fill val[] here
-    dfs2(1, 1, 1);
+    dfs2(1, N - 1, N - 1);
     G(q) while(q--) {
-        // query(a, b) or UPD(v, k) as necessary
+        // query(a, b) or st.modify(a, v) as necessary
     }
 }
