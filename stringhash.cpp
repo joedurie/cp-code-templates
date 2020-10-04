@@ -13,7 +13,7 @@ typedef pair<ll, ll> pl;
 #define M 1000000321
 #define OP(x, y) pl operator x (pl a, pl b) { return { a.K x b.K, (a.V y b.V) % M }; }
 OP(+, +) OP(*, *) OP(-, + M -)
-mt19937 gen(chrono::steady_clock::now().time_since_epoch().count());
+mt19937 gen(__builtin_ia32_rdtsc());
 uniform_int_distribution<ll> dist(256, M - 1);
 
 #define G(x) ll x; cin >> x;

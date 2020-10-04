@@ -11,27 +11,27 @@ typedef ll T;
 
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
-#define A(x) (x).begin(), (x).end()
+#define A(a) (a).begin(), (a).end()
 #define N 100010
 
 vector<ll> tree[N];
 T val[N];
 ll dep[N], idx[N], sz[N], top[N];
 
-struct segtree { // modified for HLD operations
+struct segtree { //modified for HLD operations
     T id = 0, t[2 * N];
     T f(T a, T b) { return max(a, b); }
 
-    void modify(ll i, T v) {  // set value v at vertex i
-        for (t[i = idx[i] + N] = v; i /= 2;) t[i] = f(t[2 * i], t[2 * i + 1]);
+    void modify(ll i, T v) { //set value v at vertex i
+        for(t[i = idx[i] + N] = v; i /= 2;) t[i] = f(t[2 * i], t[2 * i + 1]);
     }
 
-    T query(ll i, ll a) { // fold f on first a ancestors of i
+    T query(ll i, ll a) { //fold f on first a ancestors of i
         ll r = idx[i] + 1 + N, l = r - a;
         T res = id;
-        for (; l < r; l /= 2, r /= 2) {
-            if (l & 1) res = f(res, t[l++]);
-            if (r & 1) res = f(res, t[--r]);
+        for(; l < r; l /= 2, r /= 2) {
+            if(l & 1) res = f(res, t[l++]);
+            if(r & 1) res = f(res, t[--r]);
         }
         return res;
     }
@@ -57,7 +57,7 @@ void dfs2(ll i, ll p, ll t) {
         dfs2(j, i, t), t = i;
 }
 
-T query(ll a, ll b) { // only works for commutative operations - others very messy
+T query(ll a, ll b) { //only works for commutative operations - others very messy
     if(dep[a] - dep[b] == idx[a] - idx[b]) {
         if(dep[a] > dep[b]) swap(a, b);
         return st.query(b, dep[b] - dep[a] + 1); //remove +1 if querying vals at edges (not vertices)
@@ -79,6 +79,6 @@ int main() {
     //if values initially on edges, fill val[] here
     dfs2(1, N - 1, N - 1);
     G(q) while(q--) {
-        // query(a, b) or st.modify(a, v) as necessary
+        //query(a, b) or st.modify(a, v) as necessary
     }
 }

@@ -13,7 +13,7 @@ typedef vector<vector<ld>> mat;
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
 #define FD(i, r, l) for(ll i = r; i > (l); --i)
-#define A(x) (x).begin(), (x).end()
+#define A(a) (a).begin(), (a).end()
 #define N 100010
 
 ld elim(mat& a) { //a is n x m augmented matrix (m > n), returns determinant

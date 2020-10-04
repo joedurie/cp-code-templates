@@ -21,15 +21,14 @@ void dijk(int s) {
     fill_n(d, n + 1, LLONG_MAX);
     d[s] = p[s] = 0;
     priority_queue<pl, vector<pl>, greater<pl>> q;
-    q.push({0, s});
+    q.emplace(0, s);
     while (q.size()) {
         ll du = q.top().K, u = q.top().V;
         q.pop();
-        if(du == d[u])
-            for(pl e : graph[u]) {
-                ll v = e.K, w = du + e.V;
-                if(w < d[v]) d[v] = w, p[v] = u, q.push({w, v});
-            }
+        if(du == d[u]) for(pl e : graph[u]) {
+            ll v = e.K, dv = du + e.V;
+            if(dv < d[v]) d[v] = dv, p[v] = u, q.emplace(dv, v);
+        }
     }
 }
 

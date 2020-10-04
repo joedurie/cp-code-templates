@@ -27,7 +27,7 @@ struct circ { pt C; ld R; };
 #define CRS(a, b) (conj(a) * (b)).Y //scalar cross product
 #define DOT(a, b) (conj(a) * (b)).X //dot product
 #define U(p) ((p) / abs(p)) //unit vector in direction of p (don't use if !p == true)
-#define A(x) (x).begin(), (x).end() //shortens sort(), upper_bound(), etc. for vectors
+#define A(a) (a).begin(), (a).end() //shortens sort(), upper_bound(), etc. for vectors
 
 //constants (INF and EPS may need to be modified)
 constexpr ld PI = acos(-1), INF = 1e30, EPS = 0.0001;

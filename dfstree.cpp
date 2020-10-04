@@ -13,7 +13,7 @@ typedef pair<ll, ll> pl;
 #define N 100010
 
 vector<ll> graph[N], backIn[N], backOut[N], tree[N];
-ll dep[N], par[N]; //make depth of root 1
+ll dep[N], par[N];
 
 ll dfs(ll i, ll p) {
     par[i] = p;

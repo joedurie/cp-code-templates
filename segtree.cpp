@@ -18,15 +18,15 @@ struct segtree {
 
     T f(T a, T b) { return a + b; }
 
-    void modify(ll p, T v) {  // set value v at position p
-        for (t[p += N] = v; p /= 2;) t[p] = f(t[2 * p], t[2 * p + 1]);
+    void modify(ll p, T v) { //set value v at position p
+        for(t[p += N] = v; p /= 2;) t[p] = f(t[2 * p], t[2 * p + 1]);
     }
 
-    T query(ll l, ll r) { // query on interval [l, r)
+    T query(ll l, ll r) { //query on interval [l, r)
         T resl = id, resr = id;
-        for (l += N, r += N; l < r; l /= 2, r /= 2) {
-            if (l & 1) resl = f(resl, t[l++]);
-            if (r & 1) resr = f(t[--r], resr);
+        for(l += N, r += N; l < r; l /= 2, r /= 2) {
+            if(l & 1) resl = f(resl, t[l++]);
+            if(r & 1) resr = f(t[--r], resr);
         }
         return f(resl, resr);
     }

@@ -11,7 +11,7 @@ typedef pair<ll, ll> pl;
 
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
-#define A(x) (x).begin(), (x).end()
+#define A(a) (a).begin(), (a).end()
 #define N 100010
 
 struct seg { ld x; ll m, b; };
