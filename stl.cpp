@@ -51,8 +51,7 @@ int main() {
     //rotates values in a such that a[v] holds previous a[0]
     rotate(a, a + v, a + n);
     //randomly shuffles a
-    random_device rd;
-    mt19937 g(rd());
+    mt19937 g(__builtin_ia32_rdtsc());
     shuffle(a, a + n, g);
     //sorts a
     sort(a, a + n);

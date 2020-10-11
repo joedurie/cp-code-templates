@@ -12,7 +12,7 @@ typedef pair<ll, ll> pl;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
 #define N 100010
 
-struct segtree {
+namespace sgtree {
     typedef ll T;
     T id = 0, t[2 * N];
 
@@ -30,4 +30,4 @@ struct segtree {
         }
         return f(resl, resr);
     }
-};
+}

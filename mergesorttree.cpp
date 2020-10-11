@@ -14,9 +14,9 @@ typedef pair<ll, ll> pl;
 #define A(a) (a).begin(), (a).end()
 #define N 100010
 
-struct mstree {
+namespace mstree {
     vector<ll> t[2 * N];
- 
+
     ll f(ll i, ll k) { //num elements < k in t[i]
         return (ll)(lower_bound(A(t[i]), k) - t[i].begin());
     }
@@ -33,4 +33,4 @@ struct mstree {
         }
         return res;
     }
-};
+}

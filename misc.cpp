@@ -19,22 +19,6 @@ typedef pair<ll, ll> pl;
 freopen("in.txt", "r", stdin);
 freopen("out.txt", "w", stdout);
 
-//PBDS
-
-#include <bits/extc++.h>
-using namespace __gnu_cxx;
-using namespace __gnu_pbds;
-
-typedef tree<ll, null_type, less<ll>,
-rb_tree_tag, tree_order_statistics_node_update> set_t;
-
-int main() {
-    set_t s;
-    s.insert(6), s.insert(11); //inserts 6, 11
-    s.find_by_order(1); //returns element at (0-indexed) position 1
-    s.order_of_key(9); //returns number of elements in s that are < 9
-}
-
 //DSU
 
 ll par[N];

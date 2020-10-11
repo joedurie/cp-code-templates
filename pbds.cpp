@@ -31,14 +31,17 @@ int main() {
     cout << *s.find_by_order(1) << '\n'; //element at (0-indexed) position 1
     cout << s.order_of_key(9) << '\n'; //number of elements in s that are < 9
     cout << s.size() << '\n';
+    cout << (s.find(6) != s.end()) << ' ' << (s.find(7) != s.end()) << '\n';
+    s.erase(11);
     for(ll x : s) cout << x << ' ';
     cout << '\n';
 
     //Hash Table
-    table_t t; //can be used basically as std::map
-    t[2235326] = 17;
-    cout << t[2363627] << '\n';
-    cout << t[2235326] << '\n';
+    table_t t; //can be used basically as std::unordered_map
+    t[2222222] = 17;
+    cout << t[2222222] << ' ' << t[2345678] << '\n';
+    cout << (t.find(2345678) != t.end()) << ' ' << (t.find(1234567) != t.end()) << '\n';
+    t.erase(2345678);
     for(pl p : t) cout << p.first << ' ' << p.second << '\n';
 
     //Rope

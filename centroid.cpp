@@ -47,5 +47,5 @@ int main() {
         tree[u].push_back(v);
         tree[v].push_back(u);
     }
-    decomp(1, 1);
+    int root = decomp(1, 1);
 }
