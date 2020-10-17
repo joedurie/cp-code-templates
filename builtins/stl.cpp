@@ -6,18 +6,18 @@ set<int> st;
 map<int, int> mp;
 
 int main() {
+    //returns sum of v + all elements of a (changes v too)
+    accumulate(a, a + n, v);
     //returns true iff v is somewhere in a (a must be sorted)
     binary_search(a, a + n, v);
     //copies a into b
-    copy(a, a + n, b);
-    copy_n(a, n, b);
+    copy(a, a + n, b), copy_n(a, n, b);
     //returns number of times v occurs in a
     count(a, a + n, v);
     //returns true iff a[i] == b[i] for all 0 <= i < n
     equal(a, a + n, b);
     //fills a with value v
-    fill(a, a + n, v);
-    fill_n(a, n, v);
+    fill(a, a + n, v), fill_n(a, n, v);
     //returns iterator to first occurrence of v in a
     find(a, a + n, v);
     //sets all a[i] to v + i (useful for DSU)
@@ -44,6 +44,8 @@ int main() {
     //can be used to loop through permutations (do/while loop)
     next_permutation(a, a + n);
     prev_permutation(a, a + n);
+    //fills b with partial sums of a
+    partial_sum(a, a + n, b);
     //replaces all occurrences of v in a with u
     replace(a, a + n, v, u);
     //reverses order of a

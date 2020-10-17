@@ -18,9 +18,9 @@ vector<ll> tree[N];
 T val[N];
 ll dep[N], idx[N], sz[N], top[N];
 
-struct segtree { //modified for HLD operations
+namespace sgtree { //modified for HLD operations
     T id = 0, t[2 * N];
-    T f(T a, T b) { return max(a, b); }
+    T f(T a, T b) { return a + b; }
 
     void modify(ll i, T v) { //set value v at vertex i
         for(t[i = idx[i] + N] = v; i /= 2;) t[i] = f(t[2 * i], t[2 * i + 1]);
@@ -35,9 +35,7 @@ struct segtree { //modified for HLD operations
         }
         return res;
     }
-};
-
-struct segtree st;
+}
 
 ll dfs1(ll i, ll p) {
     dep[i] = dep[p] + 1;
@@ -52,7 +50,7 @@ ll pos = 0;
 void dfs2(ll i, ll p, ll t) {
     top[i] = t;
     idx[i] = pos++;
-    st.modify(i, val[i]);
+    sgtree::modify(i, val[i]);
     for(ll j : tree[i]) if(j - p)
         dfs2(j, i, t), t = i;
 }
@@ -60,10 +58,10 @@ void dfs2(ll i, ll p, ll t) {
 T query(ll a, ll b) { //only works for commutative operations - others very messy
     if(dep[a] - dep[b] == idx[a] - idx[b]) {
         if(dep[a] > dep[b]) swap(a, b);
-        return st.query(b, dep[b] - dep[a] + 1); //remove +1 if querying vals at edges (not vertices)
+        return sgtree::query(b, dep[b] - dep[a] + 1); //remove +1 if querying vals at edges (not vertices)
     }
     if(dep[top[a]] > dep[top[b]]) swap(a, b);
-    return st.f(query(a, top[b]), st.query(b, dep[b] - dep[top[b]]));
+    return sgtree::f(query(a, top[b]), sgtree::query(b, dep[b] - dep[top[b]]));
 }
 
 int main() {
