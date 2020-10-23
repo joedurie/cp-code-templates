@@ -77,6 +77,6 @@ int main() {
     //if values initially on edges, fill val[] here
     dfs2(1, N - 1, N - 1);
     G(q) while(q--) {
-        //query(a, b) or st.modify(a, v) as necessary
+        //query(a, b) or sgtree::modify(a, v) as necessary
     }
 }

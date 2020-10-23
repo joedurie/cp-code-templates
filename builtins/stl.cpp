@@ -11,13 +11,15 @@ int main() {
     //returns true iff v is somewhere in a (a must be sorted)
     binary_search(a, a + n, v);
     //copies a into b
-    copy(a, a + n, b), copy_n(a, n, b);
+    copy(a, a + n, b);
+    copy_n(a, n, b);
     //returns number of times v occurs in a
     count(a, a + n, v);
     //returns true iff a[i] == b[i] for all 0 <= i < n
     equal(a, a + n, b);
     //fills a with value v
-    fill(a, a + n, v), fill_n(a, n, v);
+    fill(a, a + n, v);
+    fill_n(a, n, v);
     //returns iterator to first occurrence of v in a
     find(a, a + n, v);
     //sets all a[i] to v + i (useful for DSU)
@@ -34,11 +36,9 @@ int main() {
     lower_bound(a, a + n, v);
     st.lower_bound(v);
     mp.lower_bound(v); //note that v is the key type
-    //returns iterator to max element
-    max_element(a, a + n);
-    //returns iterator to min element
+    //returns iterator to min element / max element / both
     min_element(a, a + n);
-    //returns pair of iterators to min and max
+    max_element(a, a + n);
     minmax_element(a, a + n);
     //permutes elements of a to next permutation, returns true iff next / prev permutation exists
     //can be used to loop through permutations (do/while loop)
