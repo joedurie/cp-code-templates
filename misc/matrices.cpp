@@ -14,9 +14,10 @@ typedef vector<vector<ld>> mat;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
 #define FD(i, r, l) for(ll i = r; i > (l); --i)
 #define A(a) (a).begin(), (a).end()
+#define MAT(a, n, m) mat a(n, vector<ld>(m, 0));  
 #define N 100010
 
-ld elim(mat& a) { //a is n x m augmented matrix (m > n), returns determinant
+ld elim(mat& a) { //a is n x m augmented matrix (m >= n), returns determinant
     ll n = a.size(), m = a[0].size();
     ld det = 1;
     F(i, 0, n) {
@@ -33,7 +34,7 @@ ld elim(mat& a) { //a is n x m augmented matrix (m > n), returns determinant
 
 mat mult(mat& a, mat& b) {
     ll n = a.size(), m = b.size(), p = b[0].size();
-    mat c(n, vector<ld>(p, 0));
+    MAT(c, n, p)
     F(i, 0, n) F(j, 0, m) F(k, 0, p) c[i][k] += a[i][j] * b[j][k];
     return c;
 }
@@ -46,7 +47,7 @@ mat pow(mat& a, ll p) { //only works for square a and p > 0
 
 mat inv(mat& a) { //inverts a, returns empty matrix if non-invertible
     ll n = a.size();
-    mat b(n, vector<ld>(2 * n, 0));
+    MAT(b, n, 2 * n)
     F(i, 0, n) copy(A(a[i]), b[i].begin()), b[i][n + i] = 1;
     if(!elim(b)) return {{}};
     F(i, 0, n) FD(j, n - 1, -1) b[i][j] = b[i].back(), b[i].pop_back();
