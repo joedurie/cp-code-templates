@@ -26,7 +26,8 @@ struct circ { pt C; ld R; };
 #define Y imag()
 #define CRS(a, b) (conj(a) * (b)).Y //scalar cross product
 #define DOT(a, b) (conj(a) * (b)).X //dot product
-#define U(p) ((p) / abs(p)) //unit vector in direction of p (don't use if !p == true)
+#define U(p) ((p) / abs(p)) //unit vector in direction of p (don't use if Z(p) == true)
+#define Z(x) (abs(x) < EPS)
 #define A(a) (a).begin(), (a).end() //shortens sort(), upper_bound(), etc. for vectors
 
 //constants (INF and EPS may need to be modified)
@@ -34,12 +35,8 @@ constexpr ld PI = acos(-1), INF = 1e30, EPS = 0.0001;
 constexpr pt I = {0, 1}, INV = {INF, INF};
 
 namespace std {
-	//true if p is within radius EPS of (0, 0)
-	bool operator!(pt a) { return abs(a) < EPS; }
-	//true if d is within EPS of 0
-	bool operator!(ld d) { return abs(d) < EPS; }
 	//lexicographical comparison
-	bool operator<(pt a, pt b) { return !(a.X - b.X) ? a.Y < b.Y : a.X < b.X; }
+	bool operator<(pt a, pt b) { return Z(a.X - b.X) ? a.Y < b.Y : a.X < b.X; }
 }
 
 /**
@@ -56,14 +53,14 @@ line l2p(pt p, pt q) { return {p, q - p, 0}; }
 line s2p(pt p, pt q) { return {p, q - p, 1}; }
 
 //line through p with angle th
-line ang_line(pt p, ld th) { return {p, polar(1ld, th), 0}; }
+line ang_line(pt p, ld th) { return {p, polar((ld)1, th), 0}; }
 
 /**
  * GENERAL GEOMETRY FUNCTIONS
  */
 
 //true if d1 and d2 parallel (zero vectors considered parallel to everything)
-bool parallel(pt d1, pt d2) { return !d1 || !d2 || !CRS(U(d1), U(d2)); }
+bool parallel(pt d1, pt d2) { return Z(d1) || Z(d2) || Z(CRS(U(d1), U(d2))); }
 
 //"above" here means if l & p are rotated such that l.D points in the +x direction, then p is above l
 bool above_line(pt p, line l) { return CRS(p - l.P, l.D) > 0; }
@@ -94,7 +91,7 @@ pt refl_pt(pt p, line l) { return (ld)2 * cl_pt_on_l(p, ml(l)) - p; }
 //ray r reflected off l (if no intersection, returns original ray)
 line reflect_line(line r, line l) {
 	pt p = intsct(r, l);
-	if(!(p - INV)) return r;
+	if(Z(p - INV)) return r;
 	return {p, INF * (p - refl_pt(r.P, l)), 1};
 }
 
@@ -130,6 +127,14 @@ circ circumcirc(pt a, pt b, pt c) {
  * CONVEX HULL
  */
 
+//returns true if p is contained in the convex hull given by hu / hd
+bool in_hull(pt p, pair<vector<pt>, vector<pt>>& h) {
+	if(p < *h.first.begin() || *h.second.begin() < p) return false;
+	auto u = upper_bound(A(h.first), p);
+	auto d = lower_bound(h.second.rbegin(), h.second.rend(), p);
+	return CRS(*u - p, *(u - 1) - p) > 0 && CRS(*(d - 1) - p, *d - p) > 0; //change to >= if border counts as "inside"
+}
+
 //helper function for get_hull
 void do_hull(vector<pt>& pts, vector<pt>& h) {
 	for(pt p : pts) {
@@ -155,46 +160,46 @@ vector<pt> full_hull(vector<pt>& pts) {
 	return h.first;
 }
 
-//returns true if p is contained in the convex hull given by hu / hd
-bool in_hull(pt p, vector<pt>& hu, vector<pt>& hd) {
-	if(p < *hu.begin() || *hd.begin() < p) return false;
-	auto u = upper_bound(A(hu), p);
-	auto d = lower_bound(hd.rbegin(), hd.rend(), p);
-	return CRS(*u - p, *(u - 1) - p) > 0 && CRS(*(d - 1) - p, *d - p) > 0; //change to >= if border counts as "inside"
-}
-
 /**
  * DYNAMIC CONVEX HULL
  */
 
-//helper function for in_dyn_hull
-bool dyn_in(pt p, set<pt> h) {
-	if(p < *h.begin() || *h.rbegin() < p) return false;
-	auto i = h.upper_bound(p);
-	return CRS(*i - p, *(i - 1) - p) > 0;
+//helper function for dyn_in_hull
+bool dyn_in(pt p, set<pt>& h) {
+	if(h.empty() || p < *h.begin() || *h.rbegin() < p) return false;
+	auto i = h.upper_bound(p), j = i--;
+	return CRS(*j - p, *i - p) > 0; //change to >= if border counts as "inside"
 }
 
 //returns true if p contained in dynamic hull hu / hd
-bool in_dyn_hull(pt p, set<pt>& hu, set<pt>& hd) { return dyn_in(p, hu) && dyn_in(-p, hd); }
+bool dyn_in_hull(pt p, pair<set<pt>, set<pt>>& h) { return dyn_in(p, h.first) && dyn_in(-p, h.second); }
 
-//helper function for add_to_dyn_hull
-void dyn_add(pt p, set<pt> h, bool l = true, bool r = true) {
-	h.erase(p);
+//helper function for dyn_add
+void fix_bad(set<pt>::iterator i, set<pt>&h, bool l) {
+	if(i == --h.begin() || i == h.end()) return;
+	pt p = *i; h.erase(p);
+	if(!dyn_in(p, h)) h.insert(p);
+	else fix_bad(l ? --h.lower_bound(p) : h.upper_bound(p), h, l);
+}
+
+//helper function for dyn_add_to_hull
+void dyn_add(pt p, set<pt>& h) {
 	if(dyn_in(p, h)) return;
 	h.insert(p);
-	if(l && !(*h.begin() - p)) dyn_add(*(--h.lower_bound(p)), h, true, false);
-	if(r && !(*h.rbegin() - p)) dyn_add(*h.upper_bound(p), h, false, true);
+	fix_bad(--h.lower_bound(p), h, true);
+	fix_bad(h.upper_bound(p), h, false);
 }
 
 //adds p to dynamic hull hu / hd
-void add_to_dyn_hulls(pt p, set<pt>& hu, set<pt>& hd) { dyn_add(p, hu), dyn_add(-p, hd); }
+void dyn_add_to_hull(pt p, pair<set<pt>, set<pt>>& h) { dyn_add(p, h.first), dyn_add(-p, h.second); }
 
-vector<pt> full_hull_from_dyn(set<pt>& hu, set<pt>& hd) {
+//turns dynamic hull h into vector of pts (h is destroyed)
+vector<pt> dyn_full_hull(pair<set<pt>, set<pt>>& h) {
 	vector<pt> poly;
-	hu.erase(hu.begin());
-	for(pt p : hu) poly.push_back(p);
-	hd.erase(hd.begin());
-	for(pt p : hd) poly.push_back(-p);
+	h.first.erase(h.first.begin());
+	for(pt p : h.first) poly.push_back(p);
+	h.second.erase(h.second.begin());
+	for(pt p : h.second) poly.push_back(-p);
 	return poly;
 }
 
@@ -210,7 +215,7 @@ bool in_poly(pt p, vector<pt>& poly) {
 	for(pt q : poly) {
 		line s = s2p(q, lst); lst = q;
 		if(on_line(p, s)) return true; //change if border not included
-		else if(!!(intsct(l, s) - INV)) ans = !ans;
+		else if(!Z(intsct(l, s) - INV)) ans = !ans;
 	}
 	return ans;
 }
@@ -250,12 +255,12 @@ pt centroid(vector<pt>& poly) {
 //vector of intersection pts of two circs (up to 2) (if circles same, returns empty vector)
 vector<pt> intsctCC(circ c1, circ c2) {
 	ld d = abs(c1.C - c2.C);
-	if(d > c1.R + c2.R || d < abs(c1.R - c2.R) || !d) return {};
+	if(d > c1.R + c2.R || d < abs(c1.R - c2.R) || Z(d)) return {};
 	ld h = (d * d - c2.R * c2.R + c1.R * c1.R) / (2 * d);
 	pt v = U(I * (c2.C - c1.C)) * sqrt(d * d - h * h);
 	pt p = c1.C + U(c2.C - c1.C) * h;
 	vector<pt> ans = {p + v};
-	if(!!v) ans.push_back(p - v);
+	if(!Z(v)) ans.push_back(p - v);
 	return ans;
 }
 
@@ -266,7 +271,7 @@ vector<pt> intsctCL(circ c, line l) {
 	pt v = U(l.D) * sqrt(c.R * c.R - norm(p - c.C));
 	vector<pt> ans;
 	if(on_line(p + v, l)) ans.push_back(p + v);
-	if(on_line(p - v, l) && !!v) ans.push_back(p - v);
+	if(on_line(p - v, l) && !Z(v)) ans.push_back(p - v);
 	return ans;
 }
 
@@ -274,12 +279,12 @@ vector<pt> intsctCL(circ c, line l) {
 vector<line> circTangents(circ c1, circ c2) {
 	pt d = c2.C - c1.C;
 	ld dr = c1.R - c2.R, d2 = norm(d), h2 = d2 - dr * dr;
-	if(!d2 || h2 < 0) return {};
+	if(Z(d2) || h2 < 0) return {};
 	vector<line> ans;
 	for(ld sg : {-1, 1}) {
 		pt u = (d * dr + d * I * sqrt(h2) * sg) / d2;
 		ans.push_back(s2p(c1.C + u * c1.R, c2.C + u * c2.R));
 	}
-	if(!h2) ans.pop_back();
+	if(Z(h2)) ans.pop_back();
 	return ans;
 }
