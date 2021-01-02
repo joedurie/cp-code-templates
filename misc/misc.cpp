@@ -75,17 +75,13 @@ int main() {
 
 ll f[N], fi[N];
 
-ll pw(ll a, ll p) {
-    if(!p) return 1;
-    ll t = pw(a, p / 2);
-    return t * t % M * (p & 1 ? a : 1) % M;
-}
+ll pw(ll a, ll p) { return p ? pw(a * a % M, p / 2) * (p & 1 ? a : 1) % M : 1; }
 
-ll inv(ll a, ll b) { return 1 < a ? b - inv(b % a, a) * b / a : 1; } //inv a mod b
+ll inv(ll a, ll b = M) { return 1 < a ? b - inv(b % a, a) * b / a : 1; } //inv a mod b
 
 int main() {
     f[0] = fi[0] = 1;
-    F(i, 1, N) f[i] = i * f[i - 1] % M, fi[i] = INV(f[i]);
+    F(i, 1, N) f[i] = i * f[i - 1] % M, fi[i] = inv(f[i]);
 }
 
 //Prime Sieve + Phi Calculation

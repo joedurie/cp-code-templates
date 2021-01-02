@@ -43,10 +43,10 @@ struct dinic {
             memset(d, 0, sizeof d);
             ll i = -(d[S] = 1);
             while(++i < q.size() && !d[S + 1])
-                for(auto e: g[q[i]])
+                for(auto e : g[q[i]])
                     if(!d[e.b] && e.flow < e.cap) {
                         q.push_back(e.b);
-                        d[e.b] = d[q[i]]+1;
+                        d[e.b] = d[q[i]] + 1;
                     }
             if(!d[S + 1]) return ans;
             memset(ptr, -1, sizeof ptr);

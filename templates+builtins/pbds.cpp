@@ -4,9 +4,9 @@
 #pragma GCC optimize("unroll-loops")
 #include <bits/stdc++.h>
 #include <bits/extc++.h>
-using namespace std;
 using namespace __gnu_cxx;
 using namespace __gnu_pbds;
+using namespace std;
 
 typedef long long int ll;
 typedef pair<ll, ll> pl;

@@ -31,7 +31,7 @@ struct circ { pt C; ld R; };
 #define A(a) (a).begin(), (a).end() //shortens sort(), upper_bound(), etc. for vectors
 
 //constants (INF and EPS may need to be modified)
-constexpr ld PI = acos(-1), INF = 1e30, EPS = 0.0001;
+constexpr ld PI = acos(-1), INF = 1e30, EPS = 0.00000000001;
 constexpr pt I = {0, 1}, INV = {INF, INF};
 
 namespace std {
