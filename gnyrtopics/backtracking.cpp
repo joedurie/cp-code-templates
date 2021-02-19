@@ -11,7 +11,7 @@ using namespace std;
 #define SQ(r, c) ((r) / 3 + 3 * ((c) / 3)) //UPDATE?
 #define MT(r, c, i) (!i ? r : (i == 1 ? c : SQ(r, c))) //UPDATE?
 #define ST(r, c, i) (!i ? r : (i == 1 ? c : SQ(r, c))) //UPDATE?
-#define N 9 //UPDATE?
+#define N 100 //UPDATE?
 #define M 3 //UPDATE?
 #define S 3 //UPDATE?
 
@@ -20,13 +20,13 @@ int gr[N][N], mk[M][N], em[S][N], sm[S][N];
 
 bool lV(int r, int c) { return true; } //IMPLEMENT
 
-void add(int r, int c, int x) { //need changes if 0 or negatives allowed in grid
-    gr[r][c] = x > 0 ? x : dfV;
+void add(int r, int c, int x, int s) {
+    gr[r][c] = s > 0 ? x : dfV;
     F(i, S) {
-        sm[i][ST(r, c, i)] -= x;
-        em[i][ST(r, c, i)] -= x / abs(x);
+        sm[i][ST(r, c, i)] -= s * x;
+        em[i][ST(r, c, i)] -= s;
     }
-    F(i, M) mk[i][MT(r, c, i)] ^= 1 << abs(x);
+    F(i, M) mk[i][MT(r, c, i)] ^= 1 << (x - mnV);
 }
 
 int getX(int r, int c, bool mn) { //distinct element optimization?
@@ -41,26 +41,26 @@ int getX(int r, int c, bool mn) { //distinct element optimization?
 bool bT(int r, int c) {
     if(r == n) return true;
     int rI = r + (c + 1) / m, cI = (c + 1) % m;
-    if(gr[r][c] != dfV) return lV(r, c) && bT(rI, cI);
+    if(gr[r][c] - dfV) return lV(r, c) && bT(rI, cI);
     int mask = mk[0][r] & mk[1][c] & mk[2][SQ(r, c)]; //UPDATE?
     int mnX = getX(r, c, true), mxX = getX(r, c, false);
-    for(int x = mnX; x <= mxX && mask >> x; ++x) if((mask >> x) & 1) {
-        add(r, c, x);
+    for(int x = mnX; x <= mxX && mask >> (x - mnV); ++x) if((mask >> (x - mnV)) & 1) {
+        add(r, c, x, 1);
         if(lV(r, c) && bT(rI, cI)) return true;
-        add(r, c, -x);
+        add(r, c, x, -1);
     }
     return false;
 }
 
 void init() {
-    F(i, M) fill_n(mk[i], N, (1 << (mxV + 1)) - (1 << mnV)); //UPDATE?
+    F(i, M) fill_n(mk[i], N, (1 << (mxV - mnV + 1)) - 1); //UPDATE?
     F(i, S) {
         fill_n(em[i], N, n); //UPDATE?
         fill_n(sm[i], N, smV); //UPDATE?
     }
     F(r, n) F(c, m) { //need to reset board for test cases?
         int x; cin >> x;
-        if(x != dfV) add(r, c, x); //need to check if input is consistent?
+        if(x - dfV) add(r, c, x, 1); //need to check if input is consistent?
     }
 }
 

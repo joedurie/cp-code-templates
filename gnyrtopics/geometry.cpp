@@ -31,7 +31,7 @@ struct circ { pt C; ld R; };
 #define A(a) (a).begin(), (a).end() //shortens sort(), upper_bound(), etc. for vectors
 
 //constants (INF and EPS may need to be modified)
-constexpr ld PI = acos(-1), INF = 1e30, EPS = 0.00000000001;
+constexpr ld PI = acos(-1), INF = 1e30, EPS = 1e-12;
 constexpr pt I = {0, 1}, INV = {INF, INF};
 
 namespace std {
@@ -68,6 +68,15 @@ bool above_line(pt p, line l) { return CRS(p - l.P, l.D) > 0; }
 //true if p is on line l
 bool on_line(pt p, line l) { return parallel(l.P - p, l.D) && (!l.S || DOT(l.P - p, l.P + l.D - p) <= 0); }
 
+//true if p inside triangle abc
+bool in_tri(pt p, pt a, pt b, pt c) {
+	line ab = s2p(a, b), bc = s2p(b, c), ac = s2p(a, c);
+	return on_line(p, ab) || on_line(p, bc) || on_line(p, ac)
+		(above_line(p, ab) == above_line(c, ab) &&
+		above_line(p, bc) == above_line(a, bc) &&
+		above_line(p, ac) == above_line(b, ac));
+}
+
 //intersection pt of l1 and l2, returns INV if they are nonintersecting / parallel / identical
 pt intsct(line l1, line l2) {
 	if(parallel(l1.D, l2.D)) return INV;
@@ -87,6 +96,8 @@ ld dist_to(pt p, line l) { return abs(p - cl_pt_on_l(p, l)); }
 
 //p reflected over l
 pt refl_pt(pt p, line l) { return (ld)2 * cl_pt_on_l(p, ml(l)) - p; }
+
+//pt refl_pt2(pt p, line l) { return conj(p/U(l.D))*U(l.D); }
 
 //ray r reflected off l (if no intersection, returns original ray)
 line reflect_line(line r, line l) {
