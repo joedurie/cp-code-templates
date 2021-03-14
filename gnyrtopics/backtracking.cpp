@@ -6,6 +6,7 @@
 using namespace std;
 
 #define F(i, k) for(int i = 0; i < (k); ++i)
+#define G(x) int x; cin >> x;
 #define D F(i, n) F(j, m) cout << gr[i][j] << " \n"[j == m - 1];
 #define OK(r, c) (r >= 0 && c >= 0 && r < n && c < m)
 #define SQ(r, c) ((r) / 3 + 3 * ((c) / 3)) //UPDATE?
@@ -52,14 +53,14 @@ bool bT(int r, int c) {
     return false;
 }
 
-void init() {
+void init() { //are you indexing properly with the input?
     F(i, M) fill_n(mk[i], N, (1 << (mxV - mnV + 1)) - 1); //UPDATE?
     F(i, S) {
         fill_n(em[i], N, n); //UPDATE?
         fill_n(sm[i], N, smV); //UPDATE?
     }
     F(r, n) F(c, m) { //need to reset board for test cases?
-        int x; cin >> x;
+        G(x) //are you using add() vs gr[][] properly?
         if(x - dfV) add(r, c, x, 1); //need to check if input is consistent?
     }
 }
