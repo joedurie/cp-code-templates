@@ -102,6 +102,6 @@ int main() {
     prime[0] = prime[1] = 1;
     F(i, 2, N) if(!prime[i]) {
         prime[i] = i;
-        for (ll j = i * i; j < NN; j += i) if(!prime[j]) prime[j] = i;
+        for (ll j = i * i; j < N; j += i) if(!prime[j]) prime[j] = i;
     }
 }

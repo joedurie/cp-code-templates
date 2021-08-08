@@ -39,9 +39,9 @@ mat mult(mat& a, mat& b) {
     return c;
 }
 
-mat pow(mat& a, ll p) { //only works for p > 0
+mat pw(mat& a, ll p) { //only works for p > 0
     if(p == 1) return a;
-    mat t = pow(mult(a, a), p / 2);
+    mat t = pw(mult(a, a), p / 2);
     return p & 1 ? mult(t, a) : t;
 }
 

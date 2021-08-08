@@ -43,7 +43,7 @@ int main() {
     cin.tie(0);
     cin >> n >> s;
     p[0] = { 1, 1 }, p[1] = { dist(gen) | 1, dist(gen) };
-    F(i, 1, s.size() + 1) p[i] = p[i - 1] * p[1], h[i] = h[i - 1] * p[1] + make_pair(s[i - 1], s[i - 1]);
+    F(i, 1, s.size() + 1) p[i] = p[i - 1] * p[1], h[i] = h[i - 1] * p[1] + pl{s[i - 1], s[i - 1]};
     iota(suff, suff + n, 0);
     sort(suff, suff + n, [](ll i, ll j) { return lexLess(i, n - i, j, n - j); });
 }

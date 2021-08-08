@@ -15,7 +15,6 @@ typedef pair<ll, ll> pl;
 #define N 100010
 
 struct seg { ld x; ll m, b; };
-
 vector<seg> hull;
 
 void insert(ll m, ll b) { //lines inserted in inc. slope order for maxhull, desc. for minhull
