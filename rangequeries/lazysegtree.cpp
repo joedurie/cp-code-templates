@@ -11,6 +11,7 @@ typedef pair<ll, ll> pl;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
 #define FD(i, r, l) for(ll i = r - 1; i > (l); --i)
 #define N 100010
+#define L 20
 
 namespace lztree {
     typedef ll T;
@@ -29,18 +30,18 @@ namespace lztree {
         if(p < N) d[p] = h(d[p], v);
     }
 
-    void modifyP(ll p, T v = idT) {
-        if(p < N) p += N, t[p] = v;
-        while(p /= 2) t[p] = g(f(t[2 * p], t[2 * p + 1]), d[p]);
-    }
-
     void push(ll p) {
-        FD(s, 25, 0) {
+        FD(s, L, 0) {
             ll i = p >> s;
             apply(2 * i, d[i]);
             apply(2 * i + 1, d[i]);
             d[i] = idD;
         }
+    }
+
+    void modifyP(ll p, T v = idT) {
+        if(p < N) { push(p += N); t[p] = v; }
+        while(p /= 2) t[p] = g(f(t[2 * p], t[2 * p + 1]), d[p]);
     }
 
     void modifyR(ll l, ll r, D v) {

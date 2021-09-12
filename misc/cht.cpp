@@ -17,7 +17,7 @@ typedef pair<ll, ll> pl;
 struct seg { ld x; ll m, b; };
 vector<seg> hull;
 
-void insert(ll m, ll b) { //lines inserted in inc. slope order for maxhull, desc. for minhull
+void insert(ll m, ll b) { //lines inserted in inc. slope order for maxhull, dec. for minhull
 	while(hull.size()) {
 		seg s = hull.back();
 		if(s.b + s.m * s.x > b + m * s.x) { //< for minhull

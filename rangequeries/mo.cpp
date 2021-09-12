@@ -33,9 +33,9 @@ int main() {
     });
     ll cL = 0, cR = -1;
     for(ll i : q) {
-        while(cL < l[i]) update(cL++, -1);
         while(cL > l[i]) update(--cL, 1);
         while(cR < r[i]) update(++cR, 1);
+        while(cL < l[i]) update(cL++, -1);
         while(cR > r[i]) update(cR--, -1);
         ans[i] = curAns;
     }

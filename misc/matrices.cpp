@@ -41,7 +41,8 @@ mat mult(mat& a, mat& b) {
 
 mat pw(mat& a, ll p) { //only works for p > 0
     if(p == 1) return a;
-    mat t = pw(mult(a, a), p / 2);
+    mat t = pw(a, p / 2);
+    t = mult(t, t);
     return p & 1 ? mult(t, a) : t;
 }
 

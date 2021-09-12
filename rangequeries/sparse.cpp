@@ -13,18 +13,18 @@ typedef pair<ll, ll> pl;
 #define N 100010
 #define L 20
 
-ll bt[N], rmq[N][L];
+ll rmq[N][L];
 
 ll f(ll a, ll b) { return min(a, b); } //must be idempotent
 
 ll query(ll l, ll r) { //half open interval [l, r)
-    return f(rmq[l][bt[r - l]], rmq[r - (1 << bt[r - l])][bt[r - l]]);
+    ll k = 63 - __builtin_clzll(r - l);
+    return f(rmq[l][k], rmq[r - (1 << k)][k]);
 }
 
 int main() {
     ios_base::sync_with_stdio(0);
     cin.tie(0);
-    F(j, 0, L) F(i, (1 << j), min(N, 1 << (j + 1))) bt[i] = j;
     G(n) F(i, 0, n) cin >> rmq[i][0];
     F(j, 1, L) F(i, 0, n) {
         ll i2 = i + (1 << (j - 1));
