@@ -20,9 +20,16 @@ typedef tree<ll, null_type, less<ll>,
 rb_tree_tag, tree_order_statistics_node_update> set_t;
 
 //Hash Table Setup 
-ll seed = __builtin_ia32_rdtsc();
-struct chash { ll operator()(ll x) const { return x ^ seed; } };
-typedef gp_hash_table<ll, ll, chash> table_t;
+struct rhash {
+    const ll seed = __builtin_ia32_rdtsc();
+    ll operator()(ll x) const {
+        x += 0x9e3779b97f4a7c15;
+        x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
+        x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
+        return x ^ (x >> 31) ^ seed;
+    }
+};
+typedef gp_hash_table<ll, ll, rhash> table_t;
 
 int main() {
     //Order Statistics Tree

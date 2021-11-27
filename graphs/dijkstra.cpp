@@ -22,7 +22,7 @@ void dijk(int s) {
     d[s] = p[s] = 0;
     priority_queue<pl, vector<pl>, greater<pl>> q;
     q.emplace(0, s);
-    while (q.size()) {
+    while(q.size()) {
         ll du = q.top().K, u = q.top().V;
         q.pop();
         if(du == d[u]) for(pl e : graph[u]) {
