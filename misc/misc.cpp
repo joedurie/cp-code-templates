@@ -22,7 +22,7 @@ freopen("out.txt", "w", stdout);
 //DSU
 
 ll par[N];
-ll dsu(ll i) { return par[i] == i ? i : par[i] = dsu(par[i]); }
+ll dsu(ll i) { return par[i] ? par[i] = dsu(par[i]) : i; }
 
 //Floyd-Warshall
 

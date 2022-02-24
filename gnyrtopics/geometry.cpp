@@ -35,8 +35,8 @@ struct circ { pt C; ld R; };
 #define A(a) (a).begin(), (a).end() //shortens sort(), upper_bound(), etc. for vectors
 
 //constants (INF and EPS may need to be modified)
-constexpr ld PI = acos(-1), INF = 1e20, EPS = 1e-12;
-constexpr pt I = {0, 1};
+ld PI = acos(-1), INF = 1e20, EPS = 1e-12;
+pt I = {0, 1};
 
 namespace std {
 	//lexicographical comparison
@@ -75,7 +75,7 @@ pt cl_pt_on_l(pt p, line l) {
 ld dist_to(pt p, line l) { return abs(p - cl_pt_on_l(p, l)); }
 
 //p reflected over l
-pt refl_pt(pt p, line l) { return conj(p / U(l.D)) * U(l.D); }
+pt refl_pt(pt p, line l) { return conj((p - l.P) / U(l.D)) * U(l.D) + l.P; }
 
 //ray r reflected off l (if no intersection, returns original ray)
 line reflect_line(line r, line l) {
@@ -256,12 +256,9 @@ vector<pt> intsctCC(circ c1, circ c2) {
 
 //vector of intersection pts of a line and a circ (up to 2)
 vector<pt> intsctCL(circ c, line l) {
-    pt p = cl_pt_on_l(c.C, l);
-    ld h2 = c.R * c.R - norm(p);
-    if(h2 < 0) return {};
-    pt h = U(l.D) * sqrtl(h2);
-    if(Z(h)) return {p};
-    return {p - h, p + h};
+    vector<pt> v = intsctCC(c, circ{refl_pt(c.C, l), c.R}), ans;
+	for(pt p : v) if(on_line(p, l)) ans.push_back(p);
+    return ans;
 }
 
 //external tangents of two circles (negate c2.R for internal tangents)
@@ -276,15 +273,4 @@ vector<line> circTangents(circ c1, circ c2) {
 	}
 	if(Z(h2)) ans.pop_back();
 	return ans;
-}
-
-int main() {
-	circ c1 = {pt{1, 0}, 1};
-	circ c2 = {pt{-1, 0}, 3};
-	
-	for(line l : circTangents(c1, c2)) cout << l.P << ' ' << l.D << "t\n";
-	pt p1 = {2, 0};
-	line r(pt(0, 0), pt(2, 2), 1);
-	for(pt p : intsctCL(c2, r)) cout << p << '\n';
-	line l1(pt(0,0), pt(3,5), 0);
 }
