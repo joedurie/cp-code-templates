@@ -9,7 +9,7 @@ typedef long long int ll;
 typedef long double ld;
 typedef complex<ld> pt;
 struct line {
-	pt P, D; bool S;
+	pt P, D; bool S = false;
 	line(pt p, pt q, bool b = false) : P(p), D(q - p), S(b) {}
 	line(pt p, ld th) : P(p), D(polar((ld)1, th)) {}
 };
@@ -94,7 +94,7 @@ line alt(pt p, line l) { l.S = 0; return line(p, p + cl_pt_on_l(p, l)); }
 line ang_bis(pt a, pt b, pt c) { return line(b, b + INF * (U(a - b) + U(c - b)), 1); }
 
 //perpendicular bisector of l (assumes l.S == 1)
-line perp_bis(line l) { return {l.P + l.D / (ld)2, l.D * I, 0}; }
+line perp_bis(line l) { return line(l.P + l.D / (ld)2, arg(l.D * I)); }
 
 //orthocenter of triangle abc
 pt orthocent(pt a, pt b, pt c) { pt p; intsct(alt(a, line(b, c)), alt(b, line(a, c)), p); return p; }
