@@ -35,7 +35,7 @@ struct circ { pt C; ld R; };
 #define A(a) (a).begin(), (a).end() //shortens sort(), upper_bound(), etc. for vectors
 
 //constants (INF and EPS may need to be modified)
-ld PI = acos(-1), INF = 1e20, EPS = 1e-12;
+ld PI = acosl(-1), INF = 1e20, EPS = 1e-12;
 pt I = {0, 1};
 
 namespace std {
@@ -245,7 +245,7 @@ pt centroid(vector<pt>& poly) {
 vector<pt> intsctCC(circ c1, circ c2) {
     pt d = c2.C - c1.C;
     ld d2 = norm(d);
-    if(Z(d2)) return {}; //concentric
+    if(Z(d)) return {}; //concentric
     ld pd = (d2 + c1.R * c1.R - c2.R * c2.R) / 2;
     ld h2 = c1.R * c1.R - pd * pd / d2;
     if(h2 < 0) return {};
@@ -256,7 +256,9 @@ vector<pt> intsctCC(circ c1, circ c2) {
 
 //vector of intersection pts of a line and a circ (up to 2)
 vector<pt> intsctCL(circ c, line l) {
-    vector<pt> v = intsctCC(c, circ{refl_pt(c.C, l), c.R}), ans;
+    vector<pt> v, ans;
+    if(Z(dist_to(c.C, line(l.P, l.P + l.D, 0)))) v = {c.C + c.R * U(l.D), c.C - c.R * U(l.D)};
+    else v = intsctCC(c, circ{refl_pt(c.C, l), c.R});
 	for(pt p : v) if(on_line(p, l)) ans.push_back(p);
     return ans;
 }
