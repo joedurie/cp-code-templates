@@ -88,7 +88,7 @@ line reflect_line(line r, line l) {
  */
 
 //altitude from p to l
-line alt(pt p, line l) { l.S = 0; return line(p, p + cl_pt_on_l(p, l)); }
+line alt(pt p, line l) { l.S = 0; return line(p, cl_pt_on_l(p, l)); }
 
 //angle bisector of angle abc
 line ang_bis(pt a, pt b, pt c) { return line(b, b + INF * (U(a - b) + U(c - b)), 1); }
