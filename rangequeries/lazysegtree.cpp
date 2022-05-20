@@ -15,52 +15,63 @@ typedef pair<ll, ll> pl;
 
 namespace lztree {
     typedef ll T;
-    typedef ll D;
+    typedef ll U;
 
     T idT = 0, t[2 * N];
-    D idD = 0, d[N];
-    ll x = (fill_n(d, N, idD), 0);
+    U idU = 0, d[N];
+    ll x = (fill_n(d, N, idU), 0);
 
     T f(T a, T b) { return a + b; }
-    T g(T a, D b) { return a + b; }
-    D h(D a, D b) { return a + b; }
+    U g(U b, U a) { return a + b; }
+    T h(U b, T a) { return a + b; }
 
-    void apply(ll p, D v) {
-        t[p] = g(t[p], v);
-        if(p < N) d[p] = h(d[p], v);
+    void calc(ll p) { t[p] = h(d[p], f(t[p * 2], t[p * 2 + 1])); }
+
+    void apply(ll p, U v) {
+        t[p] = h(v, t[p]);
+        if(p < N) d[p] = g(v, d[p]);
     }
 
     void push(ll p) {
+        p += N;
         FD(s, L, 0) {
             ll i = p >> s;
-            apply(2 * i, d[i]);
-            apply(2 * i + 1, d[i]);
-            d[i] = idD;
+            if(d[i] != idU) {
+                apply(i * 2, d[i]);
+                apply(i * 2 + 1, d[i]);
+                d[i] = idU;
+            }
         }
     }
 
-    void modifyP(ll p, T v = idT) {
-        if(p < N) { push(p += N); t[p] = v; }
-        while(p /= 2) t[p] = g(f(t[2 * p], t[2 * p + 1]), d[p]);
+    void modify(ll p, T v) {
+        push(p);
+        t[p += N] = v;
+        while(p > 1) calc(p /= 2);
     }
 
-    void modifyR(ll l, ll r, D v) {
-        ll l0 = (l += N), r0 = (r += N);
-        for(; l < r; l /= 2, r /= 2) {
-            if(l & 1) apply(l++, v);
-            if(r & 1) apply(--r, v);
+    void modify(ll l, ll r, U v) {
+        push(l), push(r - 1);
+        bool cl = false, cr = false;
+        for(l += N, r += N; l < r; l /= 2, r /= 2) {
+            if(cl) calc(l - 1);
+            if(cr) calc(r);
+            if(l & 1) apply(l++, v), cl = true;
+            if(r & 1) apply(--r, v), cr = true;
         }
-        modifyP(l0), modifyP(r0 - 1);
+        for(--l; r; l /= 2, r /= 2) {
+            if(cl) calc(l);
+            if(cr) calc(r);
+        }
     }
 
     T query(ll l, ll r) {
-        l += N, r += N;
         push(l), push(r - 1);
-        T resL = idT, resR = idT;
-        for(; l < r; l /= 2, r /= 2) {
-            if(l & 1) resL = f(resL, t[l++]);
-            if(r & 1) resR = f(t[--r], resR);
+        T resl = idT, resr = idT;
+        for(l += N, r += N; l < r; l /= 2, r /= 2) {
+            if(l & 1) resl = f(resl, t[l++]);
+            if(r & 1) resr = f(t[--r], resr);
         }
-        return f(resL, resR);
+        return f(resl, resr);
     }
 }
