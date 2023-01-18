@@ -243,20 +243,19 @@ pt centroid(vector<pt>& poly) {
 
 //vector of intersection pts of two circs (up to 2) (if circles same, returns empty vector)
 vector<pt> intsctCC(circ c1, circ c2) {
-    pt d = c2.C - c1.C;
+	pt d = c2.C - c1.C;
 	if(Z(d) || abs(d) >= c1.R + c2.R - EPS) return {};
-	cout << (c1.R * c1.R + norm(d) - c2.R * c2.R) / (2 * c1.R * abs(d)) << '\n';
 	ld th2 = acosl((c1.R * c1.R + norm(d) - c2.R * c2.R) / (2 * c1.R * abs(d)));
 	return {c1.C + polar(c1.R, arg(d) + th2), c1.C + polar(c1.R, arg(d) - th2)};
 }
 
 //vector of intersection pts of a line and a circ (up to 2)
 vector<pt> intsctCL(circ c, line l) {
-    vector<pt> v, ans;
-    if(Z(dist_to(c.C, line(l.P, l.P + l.D, 0)))) v = {c.C + c.R * U(l.D), c.C - c.R * U(l.D)};
-    else v = intsctCC(c, circ{refl_pt(c.C, l), c.R});
+	vector<pt> v, ans;
+	if(Z(dist_to(c.C, line(l.P, l.P + l.D, 0)))) v = {c.C + c.R * U(l.D), c.C - c.R * U(l.D)};
+	else v = intsctCC(c, circ{refl_pt(c.C, l), c.R});
 	for(pt p : v) if(on_line(p, l)) ans.push_back(p);
-    return ans;
+	return ans;
 }
 
 //external tangents of two circles (negate c2.R for internal tangents)
