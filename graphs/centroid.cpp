@@ -6,13 +6,15 @@
 using namespace std;
 
 typedef long long int ll;
+typedef long double ld;
 typedef pair<ll, ll> pl;
+typedef vector<ll> vl;
 
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
 #define N 100010
 
-vector<ll> tree[N];
+vl tree[N];
 ll sz[N], cPar[N], lvl[N]; //lvl is 1-indexed
 
 ll getSize(ll i, ll p) {

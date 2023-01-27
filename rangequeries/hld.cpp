@@ -6,7 +6,9 @@
 using namespace std;
 
 typedef long long int ll;
+typedef long double ld;
 typedef pair<ll, ll> pl;
+typedef vector<ll> vl;
 typedef ll T;
 
 #define G(x) ll x; cin >> x;
@@ -14,7 +16,7 @@ typedef ll T;
 #define A(a) (a).begin(), (a).end()
 #define N 100010
 
-vector<ll> tree[N];
+vl tree[N];
 T val[N];
 ll dep[N], idx[N], sz[N], top[N];
 

@@ -6,18 +6,22 @@
 using namespace std;
 
 typedef long long int ll;
+typedef long double ld;
 typedef pair<ll, ll> pl;
+typedef vector<ll> vl;
 
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
 #define A(a) (a).begin(), (a).end()
 #define M 1000000007 //998244353
-#define N 100010
+#define N 1010
 
 //File Input / Output
 
-freopen("in.txt", "r", stdin);
-freopen("out.txt", "w", stdout);
+int main() {
+    freopen("in.txt", "r", stdin);
+    freopen("out.txt", "w", stdout);
+}
 
 //DSU
 
@@ -45,7 +49,7 @@ int main() {
 
 //Time-in Time-out DFS
 
-vector<ll> tree[N];
+vl tree[N];
 ll tIn[N], tOut[N];
 
 ll dfs(ll i, ll p, ll t) {
@@ -57,7 +61,7 @@ ll dfs(ll i, ll p, ll t) {
 
 //Length of LIS (default is non-decreasing)
 
-vector<ll> lis;
+vl lis;
 ll n, a[N];
 
 int main() {
@@ -84,22 +88,23 @@ int main() {
     F(i, 1, N) f[i] = i * f[i - 1] % M, fi[i] = inv(f[i]);
 }
 
-//Prime Sieve + Phi Calculation
+//Prime Sieve + Listing Divisors
 
 ll prime[N];
+vl divs[N]; //non-memory efficient, divisors are sorted
 
-ll phi(ll n) {
-    ll ans = n;
+vl getdivs(ll n) { //memory efficient, divisors are unsorted
+    vl v = {1};
     while(n > 1) {
-        ll p = prime[n];
-        while(!(n % p)) n /= p;
-        ans = ans / p * (p - 1);
+        ll p = prime[n], m = n, s = v.size();
+        while(!(n % p) && (n /= p))
+            F(j, 0, s) v.push_back(v[j] * m / n);
     }
-    return ans;
+    return v;
 }
 
 int main() {
-    prime[0] = prime[1] = 1;
+    F(i, 1, N) for(ll j = i; j < N; j += i) divs[j].push_back(i);
     F(i, 2, N) if(!prime[i]) {
         prime[i] = i;
         for (ll j = i * i; j < N; j += i) if(!prime[j]) prime[j] = i;

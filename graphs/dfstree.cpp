@@ -6,13 +6,15 @@
 using namespace std;
 
 typedef long long int ll;
+typedef long double ld;
 typedef pair<ll, ll> pl;
+typedef vector<ll> vl;
 
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
 #define N 100010
 
-vector<ll> graph[N], backIn[N], backOut[N], tree[N];
+vl graph[N], backIn[N], backOut[N], tree[N];
 ll dep[N], par[N];
 
 void dfs(ll i, ll p) {

@@ -6,7 +6,9 @@
 using namespace std;
 
 typedef long long int ll;
+typedef long double ld;
 typedef pair<ll, ll> pl;
+typedef vector<ll> vl;
 
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
@@ -15,7 +17,7 @@ typedef pair<ll, ll> pl;
 #define L 20
 
 ll dep[N], par[N][L];
-vector<ll> tree[N];
+vl tree[N];
 
 void dfs(ll i, ll p) {
     dep[i] = dep[p] + 1;

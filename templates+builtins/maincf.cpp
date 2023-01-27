@@ -19,6 +19,7 @@ operator << (ostream &o, T<A...> V) {
 typedef long long int ll;
 typedef long double ld;
 typedef pair<ll, ll> pl;
+typedef vector<ll> vl;
 
 #define G(x) ll x; cin >> x;
 #define GD(x) ld x; cin >> x;

@@ -6,7 +6,9 @@
 using namespace std;
 
 typedef long long int ll;
+typedef long double ld;
 typedef pair<ll, ll> pl;
+typedef vector<ll> vl;
 
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
@@ -39,7 +41,7 @@ struct dinic {
 
     ll calc() {
         while(1) {
-            vector<ll> q{S};
+            vl q{S};
             memset(d, 0, sizeof d);
             ll i = -(d[S] = 1);
             while(++i < q.size() && !d[S + 1])

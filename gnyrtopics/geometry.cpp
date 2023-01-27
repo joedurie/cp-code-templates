@@ -244,9 +244,10 @@ pt centroid(vector<pt>& poly) {
 //vector of intersection pts of two circs (up to 2) (if circles same, returns empty vector)
 vector<pt> intsctCC(circ c1, circ c2) {
 	pt d = c2.C - c1.C;
+	if(Z(abs(d) - c1.R - c2.R)) return {c1.C + polar(c1.R, arg(c2.C - c1.C))};
 	if(Z(d) || abs(d) >= c1.R + c2.R - EPS) return {};
-	ld th2 = acosl((c1.R * c1.R + norm(d) - c2.R * c2.R) / (2 * c1.R * abs(d)));
-	return {c1.C + polar(c1.R, arg(d) + th2), c1.C + polar(c1.R, arg(d) - th2)};
+	ld th = acosl((c1.R * c1.R + norm(d) - c2.R * c2.R) / (2 * c1.R * abs(d)));
+	return {c1.C + polar(c1.R, arg(d) + th), c1.C + polar(c1.R, arg(d) - th)};
 }
 
 //vector of intersection pts of a line and a circ (up to 2)

@@ -8,6 +8,7 @@ using namespace std;
 typedef long long int ll;
 typedef long double ld;
 typedef pair<ll, ll> pl;
+typedef vector<ll> vl;
 typedef vector<vector<ld>> mat;
 
 #define G(x) ll x; cin >> x;

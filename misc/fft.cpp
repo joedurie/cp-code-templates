@@ -9,6 +9,7 @@ typedef long long int ll;
 typedef long double ld;
 typedef complex<ld> cd;
 typedef pair<ll, ll> pl;
+typedef vector<ll> vl;
 
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
@@ -18,8 +19,7 @@ typedef pair<ll, ll> pl;
 vector<cd> rt(2, 1);
 
 void fft(vector<cd>& a) {
-    ll n = a.size();
-    vector<ll> rev(n);
+    ll n = a.size(); vl rev(n);
     F(i, 0, n) if(i < (rev[i] = (rev[i / 2] | (i & 1 ? n : 0)) / 2)) swap(a[i], a[rev[i]]);
     for(ll k = 1; k < n; k *= 2)
         for(ll i = 0; i < n; i += 2 * k) F(j, 0, k) {

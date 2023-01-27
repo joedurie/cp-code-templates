@@ -6,7 +6,9 @@
 using namespace std;
 
 typedef long long int ll;
+typedef long double ld;
 typedef pair<ll, ll> pl;
+typedef vector<ll> vl;
 
 #define G(x) ll x; cin >> x;
 #define F(i, l, r) for(ll i = l; i < (r); ++i)
@@ -15,7 +17,7 @@ typedef pair<ll, ll> pl;
 #define N 100010
 
 namespace mstree {
-    vector<ll> t[2 * N];
+    vl t[2 * N];
 
     ll f(ll i, ll k) { //num elements < k in t[i]
         return (ll)(lower_bound(A(t[i]), k) - t[i].begin());
