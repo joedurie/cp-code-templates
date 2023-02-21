@@ -38,13 +38,8 @@ struct circ { pt C; ld R; };
 ld PI = acosl(-1), INF = 1e20, EPS = 1e-12;
 pt I = {0, 1};
 
-namespace std {
-	//lexicographical comparison
-	bool operator<(pt a, pt b) { return Z(a.X - b.X) ? a.Y < b.Y : a.X < b.X; }
-}
-
 /**
- * GENERAL GEOMETRY FUNCTIONS
+ * GENERAL GEOMETRY
  */
 
 //true if d1 and d2 parallel (zero vectors considered parallel to everything)
@@ -58,7 +53,8 @@ bool on_line(pt p, line l) { return parallel(l.P - p, l.D) && (!l.S || DOT(l.P -
 
 //returns 0 for no intersection, 2 for infinite intersections, 1 otherwise. p holds intersection pt
 ll intsct(line l1, line l2, pt& p) {
-	if(parallel(l1.D, l2.D)) return on_line(l1.P, l2) ? 2 : 0;
+	if(parallel(l1.D, l2.D)) //note that two parallel segments sharing one endpoint are considered to have infinite intersections here
+		return 2 * (on_line(l1.P, l2) || on_line(l1.P + l1.D, l2) || on_line(l2.P, l1) || on_line(l2.P + l2.D, l1));
 	pt q = l1.P + l1.D * CRS(l2.D, l2.P - l1.P) / CRS(l2.D, l1.D);
 	if(on_line(q, l1) && on_line(q, l2)) { p = q; return 1; }
 	return 0;
@@ -112,87 +108,6 @@ circ circumcirc(pt a, pt b, pt c) {
 }
 
 /**
- * CONVEX HULL
- */
-
-//returns true if p is contained in the convex hull given by hu / hd
-bool in_hull(pt p, pair<vector<pt>, vector<pt>>& h) {
-	if(Z(p - *h.first.begin()) || Z(p - *h.second.begin())) return false; //change to true if border counts as inside
-	if(p < *h.first.begin() || *h.second.begin() < p) return false;
-	auto u = upper_bound(A(h.first), p);
-	auto d = lower_bound(h.second.rbegin(), h.second.rend(), p);
-	return CRS(*u - p, *(u - 1) - p) > EPS && CRS(*(d - 1) - p, *d - p) > EPS; //change to > -EPS if border counts as "inside"
-}
-
-//helper function for get_hull
-void do_hull(vector<pt>& pts, vector<pt>& h) {
-	for(pt p : pts) {
-		while(h.size() > 1 && CRS(h.back() - p, h[h.size() - 2] - p) <= EPS)
-			h.pop_back();
-		h.push_back(p);
-	}
-}
-
-//returns upper convex hull / lower convex hull of pts
-pair<vector<pt>, vector<pt>> get_hull(vector<pt>& pts) {
-	vector<pt> hu, hd;
-	sort(A(pts)), do_hull(pts, hu);
-	reverse(A(pts)), do_hull(pts, hd);
-	return {hu, hd};
-}
-
-//returns convex hull of pts as a vector of pts in cw order
-vector<pt> full_hull(vector<pt>& pts) {
-	auto h = get_hull(pts);
-	h.first.pop_back(), h.second.pop_back();
-	for(pt p : h.second) h.first.push_back(p);
-	return h.first;
-}
-
-/**
- * DYNAMIC CONVEX HULL
- */
-
-//helper function for dyn_in_hull
-bool dyn_in(pt p, set<pt>& h) {
-	if(h.empty() || p < *h.begin() || *h.rbegin() < p) return false;
-	auto i = h.upper_bound(p), j = i--;
-	return CRS(*j - p, *i - p) > EPS; //change to > -EPS if border counts as "inside"
-}
-
-//returns true if p contained in dynamic hull hu / hd
-bool dyn_in_hull(pt p, pair<set<pt>, set<pt>>& h) { return dyn_in(p, h.first) && dyn_in(-p, h.second); }
-
-//helper function for dyn_add
-void fix_bad(set<pt>::iterator i, set<pt>&h, bool l) {
-	if(i == --h.begin() || i == h.end()) return;
-	pt p = *i; h.erase(p);
-	if(!dyn_in(p, h)) h.insert(p);
-	else fix_bad(l ? --h.lower_bound(p) : h.upper_bound(p), h, l);
-}
-
-//helper function for dyn_add_to_hull
-void dyn_add(pt p, set<pt>& h) {
-	if(dyn_in(p, h)) return;
-	h.insert(p);
-	fix_bad(--h.lower_bound(p), h, true);
-	fix_bad(h.upper_bound(p), h, false);
-}
-
-//adds p to dynamic hull hu / hd
-void dyn_add_to_hull(pt p, pair<set<pt>, set<pt>>& h) { dyn_add(p, h.first), dyn_add(-p, h.second); }
-
-//turns dynamic hull h into vector of pts (h is destroyed)
-vector<pt> dyn_full_hull(pair<set<pt>, set<pt>>& h) {
-	vector<pt> poly;
-	h.first.erase(h.first.begin());
-	for(pt p : h.first) poly.push_back(p);
-	h.second.erase(h.second.begin());
-	for(pt p : h.second) poly.push_back(-p);
-	return poly;
-}
-
-/**
  * GENERAL POLYGONS
  */
 
@@ -238,14 +153,16 @@ pt centroid(vector<pt>& poly) {
 }
 
 /**
- * CIRCLE FUNCTIONS
+ * CIRCLES
  */
 
 //vector of intersection pts of two circs (up to 2) (if circles same, returns empty vector)
 vector<pt> intsctCC(circ c1, circ c2) {
+	if(c1.R < c2.R) swap(c1, c2);
 	pt d = c2.C - c1.C;
 	if(Z(abs(d) - c1.R - c2.R)) return {c1.C + polar(c1.R, arg(c2.C - c1.C))};
-	if(Z(d) || abs(d) >= c1.R + c2.R - EPS || abs(d) <= abs(c1.R - c2.R) + EPS) return {};
+	if(!Z(d) && Z(abs(d) - c1.R + c2.R)) return {c1.C + c1.R * U(d)}; 
+	if(abs(d) >= c1.R + c2.R - EPS || abs(d) <= c2.R - c1.R + EPS) return {};
 	ld th = acosl((c1.R * c1.R + norm(d) - c2.R * c2.R) / (2 * c1.R * abs(d)));
 	return {c1.C + polar(c1.R, arg(d) + th), c1.C + polar(c1.R, arg(d) - th)};
 }
