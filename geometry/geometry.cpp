@@ -156,6 +156,11 @@ pt centroid(vector<pt>& poly) {
  * CIRCLES
  */
 
+//invert a point over a circle (doesn't work for center of circle)
+pt circInv(pt p, circ c) {
+    return c.R * c.R / conj(p - c.C) + c.C;
+}
+
 //vector of intersection pts of two circs (up to 2) (if circles same, returns empty vector)
 vector<pt> intsctCC(circ c1, circ c2) {
 	if(c1.R < c2.R) swap(c1, c2);
