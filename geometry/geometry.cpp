@@ -45,7 +45,7 @@ pt I = {0, 1};
 //true if d1 and d2 parallel (zero vectors considered parallel to everything)
 bool parallel(pt d1, pt d2) { return Z(d1) || Z(d2) || Z(CRS(U(d1), U(d2))); }
 
-//"above" here means if l & p are rotated such that l.D points in the +x direction, then p is above l
+//"above" here means if l & p are rotated such that l.D points in the +x direction, then p is above l. Returns arbitrary boolean if p is on l
 bool above_line(pt p, line l) { return CRS(p - l.P, l.D) > 0; }
 
 //true if p is on line l
@@ -118,7 +118,7 @@ bool in_poly(pt p, vector<pt>& poly) {
 	pt lst = poly.back(), tmp;
 	for(pt q : poly) {
 		line s = line(q, lst, 1); lst = q;
-		if(on_line(p, s)) return false; //change if border not included
+		if(on_line(p, s)) return false; //change if border included
 		else if(intsct(l, s, tmp)) ans = !ans;
 	}
 	return ans;
@@ -167,7 +167,7 @@ vector<pt> intsctCC(circ c1, circ c2) {
 	pt d = c2.C - c1.C;
 	if(Z(abs(d) - c1.R - c2.R)) return {c1.C + polar(c1.R, arg(c2.C - c1.C))};
 	if(!Z(d) && Z(abs(d) - c1.R + c2.R)) return {c1.C + c1.R * U(d)}; 
-	if(abs(d) >= c1.R + c2.R - EPS || abs(d) <= c2.R - c1.R + EPS) return {};
+	if(abs(abs(d) - c1.R) >= c2.R - EPS) return {};
 	ld th = acosl((c1.R * c1.R + norm(d) - c2.R * c2.R) / (2 * c1.R * abs(d)));
 	return {c1.C + polar(c1.R, arg(d) + th), c1.C + polar(c1.R, arg(d) - th)};
 }
@@ -175,7 +175,7 @@ vector<pt> intsctCC(circ c1, circ c2) {
 //vector of intersection pts of a line and a circ (up to 2)
 vector<pt> intsctCL(circ c, line l) {
 	vector<pt> v, ans;
-	if(Z(dist_to(c.C, line(l.P, l.P + l.D, 0)))) v = {c.C + c.R * U(l.D), c.C - c.R * U(l.D)};
+	if(parallel(l.D, c.C - l.P)) v = {c.C + c.R * U(l.D), c.C - c.R * U(l.D)};
 	else v = intsctCC(c, circ{refl_pt(c.C, l), c.R});
 	for(pt p : v) if(on_line(p, l)) ans.push_back(p);
 	return ans;
