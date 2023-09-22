@@ -107,6 +107,6 @@ int main() {
     F(i, 1, N) for(ll j = i; j < N; j += i) divs[j].push_back(i);
     F(i, 2, N) if(!prime[i]) {
         prime[i] = i;
-        for (ll j = i * i; j < N; j += i) if(!prime[j]) prime[j] = i;
+        for(ll j = i * i; j < N; j += i) if(!prime[j]) prime[j] = i;
     }
 }

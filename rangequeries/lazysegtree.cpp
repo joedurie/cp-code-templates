@@ -23,8 +23,11 @@ namespace lztree {
     U idU = 0, d[N];
     ll x = (fill_n(d, N, idU), 0);
 
+    // combining segtree nodes a and b
     T f(T a, T b) { return a + b; }
+    // applying updates a and b (in that order)
     U g(U b, U a) { return a + b; }
+    // applying update b to segtree node a
     T h(U b, T a) { return a + b; }
 
     void calc(ll p) { t[p] = h(d[p], f(t[p * 2], t[p * 2 + 1])); }
